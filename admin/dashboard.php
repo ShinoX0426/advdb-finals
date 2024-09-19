@@ -1,25 +1,3 @@
-<?php
-// Start the session and include necessary files
-session_start();
-include('config.php');
-
-// Check if the user is logged in and is an admin
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
-    header("Location: login.php");
-    exit();
-}
-
-// Fetch some sample data (you would replace these with actual database queries)
-$total_students = 500;
-$total_appointments = 50;
-$upcoming_appointments = 10;
-$recent_cases = [
-    ['id' => 1, 'student' => 'John Doe', 'issue' => 'Academic Counseling', 'date' => '2023-09-20'],
-    ['id' => 2, 'student' => 'Jane Smith', 'issue' => 'Personal Counseling', 'date' => '2023-09-19'],
-    ['id' => 3, 'student' => 'Mike Johnson', 'issue' => 'Career Guidance', 'date' => '2023-09-18'],
-];
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,13 +5,60 @@ $recent_cases = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Don Pablo Guidance Counseling</title>
-    <link rel="shortcut icon" href="../../../FINAL/images/logo.png" type="image/x-icon">
-    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        header {
+            background-color: #0f3978;
+            padding: 1rem;
+            color: white;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background-color: #fd9619;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-left: 1rem;
+        }
+
         .dashboard-container {
             display: flex;
-            padding: 20px;
+            min-height: calc(100vh - 64px);
         }
 
         .sidebar {
@@ -41,12 +66,10 @@ $recent_cases = [
             background-color: #0f3978;
             color: white;
             padding: 20px;
-            height: calc(100vh - 120px);
         }
 
         .sidebar ul {
             list-style-type: none;
-            padding: 0;
         }
 
         .sidebar ul li {
@@ -74,6 +97,15 @@ $recent_cases = [
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #fd9619;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
         .dashboard-cards {
@@ -111,6 +143,7 @@ $recent_cases = [
         .recent-cases h3 {
             margin-top: 0;
             color: #0f3978;
+            margin-bottom: 15px;
         }
 
         table {
@@ -128,6 +161,11 @@ $recent_cases = [
         th {
             background-color: #f2f2f2;
         }
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 
@@ -135,12 +173,12 @@ $recent_cases = [
     <header>
         <nav>
             <div class="logo">
-                <img src="../../../FINAL/images/logo.png" alt="Logo">
+                <img src="../images/logo.png" alt="Logo">
                 <span>Don Pablo Guidance</span>
             </div>
             <div class="user-info">
                 <span>Welcome, Admin</span>
-                <a href="logout.php" class="logout-btn">Logout</a>
+                <a href="#" class="logout-btn">Logout</a>
             </div>
         </nav>
     </header>
@@ -164,15 +202,15 @@ $recent_cases = [
             <div class="dashboard-cards">
                 <div class="card">
                     <h3>Total Students</h3>
-                    <p><?php echo $total_students; ?></p>
+                    <p>500</p>
                 </div>
                 <div class="card">
                     <h3>Total Appointments</h3>
-                    <p><?php echo $total_appointments; ?></p>
+                    <p>50</p>
                 </div>
                 <div class="card">
                     <h3>Upcoming Appointments</h3>
-                    <p><?php echo $upcoming_appointments; ?></p>
+                    <p>10</p>
                 </div>
             </div>
             <div class="recent-cases">
@@ -188,22 +226,32 @@ $recent_cases = [
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($recent_cases as $case): ?>
-                            <tr>
-                                <td><?php echo $case['id']; ?></td>
-                                <td><?php echo $case['student']; ?></td>
-                                <td><?php echo $case['issue']; ?></td>
-                                <td><?php echo $case['date']; ?></td>
-                                <td><a href="#" class="btn btn-small">View</a></td>
-                            </tr>
-                        <?php endforeach; ?>
+                        <tr>
+                            <td>1</td>
+                            <td>John Doe</td>
+                            <td>Academic Counseling</td>
+                            <td>2023-09-20</td>
+                            <td><a href="#" class="btn btn-small">View</a></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Jane Smith</td>
+                            <td>Personal Counseling</td>
+                            <td>2023-09-19</td>
+                            <td><a href="#" class="btn btn-small">View</a></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Mike Johnson</td>
+                            <td>Career Guidance</td>
+                            <td>2023-09-18</td>
+                            <td><a href="#" class="btn btn-small">View</a></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <script src="script.js"></script>
 </body>
 
 </html>
