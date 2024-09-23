@@ -1,85 +1,59 @@
+// Login Modal
+const loginBtn = document.getElementById('loginBtn');
+const loginModal = document.getElementById('loginModal');
+const closeBtn = document.getElementsByClassName('close')[0];
 
-// Banner Section
-const slider = document.querySelector('.banner-slider');
-const slides = slider.querySelectorAll('.slide');
-const prevBtn = document.querySelector('.prev-btn');
-const nextBtn = document.querySelector('.next-btn');
-const navIndicators = document.querySelectorAll('.nav-indicator');
-
-let currentSlide = 0;
-
-slides[currentSlide].style.display = 'block';
-
-prevBtn.addEventListener('click', () => {
-    currentSlide--;
-    if (currentSlide < 0) {
-        currentSlide = slides.length - 1;
-    }
-    updateSlider();
-});
-
-nextBtn.addEventListener('click', () => {
-    currentSlide++;
-    if (currentSlide >= slides.length) {
-        currentSlide = 0;
-    }
-    updateSlider();
-});
-
-navIndicators.forEach((indicator, index) => {
-    indicator.addEventListener('click', () => {
-        currentSlide = index;
-        updateSlider();
-    });
-});
-
-function updateSlider() {
-    slides.forEach((slide) => {
-        slide.style.display = 'none';
-    });
-
-    slides[currentSlide].style.display = 'block';
-
-    navIndicators.forEach((indicator, index) => {
-        if (index === currentSlide) {
-            indicator.classList.add('active');
-        } else {
-            indicator.classList.remove('active');
-        }
-    });
+loginBtn.onclick = function () {
+    loginModal.style.display = "block";
 }
 
-// Announcement
-// Announcement Section
-const announcementSlider = document.querySelector('.announcement-slider');
-const announcementSlides = announcementSlider.querySelectorAll('.announcement-slide');
-const announcementPrevBtn = document.querySelector('.announcement-prev-btn');
-const announcementNextBtn = document.querySelector('.announcement-next-btn');
+closeBtn.onclick = function () {
+    loginModal.style.display = "none";
+}
 
+window.onclick = function (event) {
+    if (event.target == loginModal) {
+        loginModal.style.display = "none";
+    }
+}
+
+// Smooth Scrolling
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Announcement Slider
+const announcements = document.querySelectorAll('.announcement');
 let currentAnnouncement = 0;
 
-announcementSlides[currentAnnouncement].classList.add('active');
-
-announcementPrevBtn.addEventListener('click', () => {
-    currentAnnouncement--;
-    if (currentAnnouncement < 0) {
-        currentAnnouncement = announcementSlides.length - 1;
-    }
-    updateAnnouncementSlider();
-});
-
-announcementNextBtn.addEventListener('click', () => {
-    currentAnnouncement++;
-    if (currentAnnouncement >= announcementSlides.length) {
-        currentAnnouncement = 0;
-    }
-    updateAnnouncementSlider();
-});
-
-function updateAnnouncementSlider() {
-    announcementSlides.forEach((slide) => {
-        slide.classList.remove('active');
-    });
-
-    announcementSlides[currentAnnouncement].classList.add('active');
+function showNextAnnouncement() {
+    announcements[currentAnnouncement].style.display = 'none';
+    currentAnnouncement = (currentAnnouncement + 1) % announcements.length;
+    announcements[currentAnnouncement].style.display = 'block';
 }
+
+setInterval(showNextAnnouncement, 5000);
+
+// Form Submission
+const contactForm = document.querySelector('.contact-form');
+
+contactForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Here you would typically send the form data to a server
+    // For this example, we'll just log it to the console
+    console.log('Form submitted');
+
+    // Clear the form
+    this.reset();
+
+    // Show a success message
+    alert('Thank you for your message. We will get back to you soon!');
+});
+

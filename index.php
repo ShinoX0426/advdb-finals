@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,327 +8,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Don Pablo Lorenzo Memorial High School</title>
-    <link rel="shortcut icon" href="../../../FINAL/images/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-    <style>
-        .login-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-        }
-
-        .login-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 400px;
-            z-index: 1001;
-        }
-
-        .login-popup h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #0f3978;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #fd9619;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .login-btn:hover {
-            background-color: #ffc664;
-            color: black;
-        }
-
-        .forgot-password {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .forgot-password a {
-            color: #0f3978;
-            text-decoration: none;
-        }
-
-        .forgot-password a:hover {
-            text-decoration: underline;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
-            color: #333;
-            cursor: pointer;
-        }
-    </style>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    <menu class="topMenu flex">
-        <section class="flexContent">
-            <a href="emailto:info@lilliovi.com">
-                <i class="fa fa-envelope-o"></i>
-                DonPablo@dplmhs.edu.com
-            </a>
-            <a href="tel:1234567890">
-                <i class="fa fa-phone"></i>
-                90921021
-            </a>
-        </section>
-        <section class="flexContent">
-            <a href="#" title="Facebook"><i class="fa fa-facebook"></i></a>
-            <a href="#" title="Instagram"><i class="fa fa-instagram"></i></a>
-            <a href="#" title="Twitter"><i class="fa fa-twitter"></i></a>
-            <a href="#" title="youtube"><i class="fa fa-youtube"></i></a>
-        </section>
-    </menu>
-
     <header>
-        <nav>
+        <div class="container">
             <div class="logo">
-                <img src=".../../../FINAL/images/logo.png" alt="Logo">
-                <span>Don Pablo Guidance</span>
+                <img src="images/logo.png" alt="School Logo">
+                <h1>Don Pablo Lorenzo Memorial High School</h1>
             </div>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-            <div class="login">
-                <a href="login.php">Login</a>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#announcements">Announcements</a></li>
+                    <li><a href="#events">Events</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="login-btn">
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="logout.php">Logout</a>
+                <?php else: ?>
+                    <a href="#" id="loginBtn">Login</a>
+                <?php endif; ?>
             </div>
-        </nav>
+        </div>
     </header>
 
-    <div class="banner">
-        <div class="banner-slider">
-            <div class="slide">
-                <img src="../../../FINAL/images/banner.jpg" alt="Banner 1">
-                <div class="slide-content">
-                    <h2>Slide dasd</h2>
-                    <p>Slide 1 description</p>
-                </div>
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <h2>Welcome to Don Pablo Lorenzo Memorial High School</h2>
+                <p>Empowering minds, shaping futures</p>
+                <a href="#about" class="cta-btn">Learn More</a>
             </div>
-            <div class="slide">
-                <img src="../../../FINAL/images/banner.jpg" alt="Banner 2">
-                <div class="slide-content">
-                    <h2>Slide 2 Title</h2>
-                    <p>Slide 2 description</p>
-                </div>
-            </div>
-            <div class="slide">
-                <img src="../../../FINAL/images/banner.jpg" alt="Banner 3">
-                <div class="slide-content">
-                    <h2>Slide 3 Title</h2>
-                    <p>Slide 3 description</p>
-                </div>
-            </div>
-        </div>
-        <div class="nav-buttons">
-            <button class="prev-btn">Prev</button>
-            <button class="next-btn">Next</button>
-        </div>
-        <div class="nav-indicators">
-            <button class="nav-indicator" data-slide="0"></button>
-            <button class="nav-indicator" data-slide="1"></button>
-            <button class="nav-indicator" data-slide="2"></button>
-        </div>
-    </div>
+        </section>
 
-    <!-- Announcement Section -->
-    <div class="announcement">
-        <div class="announcement-content">
-            <h2>Announcements</h2>
-            <div class="announcement-slider">
-                <div class="announcement-slide active">
-                    <div class="announcement-event">
-                        <h3>Upcoming Event: School Fair</h3>
-                        <p>Date: Saturday, April 17th</p>
-                        <p>Time: 10am-2pm</p>
-                        <p>Location: School Grounds</p>
-                        <button class="announcement-btn">Learn More</button>
-                    </div>
-                    <div class="announcement-notification">
-                        <i class="fa fa-bell"></i>
-                        <p>Don't forget to mark your calendars for the school fair!</p>
-                    </div>
-                </div>
-                <div class="announcement-slide">
-                    <div class="announcement-event">
-                        <h3>Important Deadline: Scholarship Applications</h3>
-                        <p>Date: March 31st</p>
-                        <p>Time: 11:59pm</p>
-                        <p>Location: Online Application Portal</p>
-                        <button class="announcement-btn">Apply Now</button>
-                    </div>
-                    <div class="announcement-notification">
-                        <i class="fa fa-bell"></i>
-                        <p>Don't miss out on this opportunity to receive financial assistance for your education!</p>
-                    </div>
-                </div>
-                <div class="announcement-slide">
-                    <div class="announcement-event">
-                        <h3>Staff Development Day</h3>
-                        <p>Date: Friday, March 19th</p>
-                        <p>Time: All Day</p>
-                        <p>Location: School Campus</p>
-                        <button class="announcement-btn">Learn More</button>
-                    </div>
-                    <div class="announcement-notification">
-                        <i class="fa fa-bell"></i>
-                        <p>The school will be closed on Friday, March 19th for a staff development day.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="announcement-nav">
-                <button class="announcement-prev-btn">Prev</button>
-                <button class="announcement-next-btn">Next</button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- About Us section -->
-
-    <div class="about-us">
-        <div class="container">
-            <h2 class="title">About Us</h2>
-            <p class="subtitle">Welcome to Don Pablo Lorenzo Memorial High School!</p>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mission-box">
-                        <h3>Our Mission</h3>
-                        <p>Our mission is to provide a comprehensive education that prepares students for success in an
-                            ever-changing world. We strive to create a culture of excellence, innovation, and creativity
-                            that inspires students to reach their full potential.</p>
-                        <img src="../../../FINAL/images/mission-icon.png" alt="Mission Icon">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="vision-box">
-                        <h3>Our Vision</h3>
-                        <p>Our vision is to be a leading institution in education, recognized for our commitment to
-                            academic excellence, diversity, and community engagement. We aim to produce graduates who
-                            are critical thinkers, effective communicators, and responsible citizens.</p>
-                        <img src="../../../FINAL/images/vision-icon.png" alt="Vision Icon">
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="history-box">
-                        <h3>Our History</h3>
-                        <p>Don Pablo Lorenzo Memorial High School was founded in [year] with the goal of providing a
-                            quality education to students in the local community. Since then, we have grown to become a
-                            thriving institution with a strong reputation for academic excellence and community service.
-                        </p>
-                        <img src="../../../FINAL/images/history-icon.png" alt="History Icon">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="values-box">
-                        <h3>Our Values</h3>
+        <section id="about" class="about">
+            <div class="container">
+                <h2>About Us</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>Don Pablo Lorenzo Memorial High School is committed to providing quality education and
+                            fostering a nurturing environment for our students. Our dedicated faculty and staff work
+                            tirelessly to ensure that each student reaches their full potential.</p>
                         <ul>
-                            <li><i class="fa fa-graduation-cap"></i> Academic Excellence</li>
-                            <li><i class="fa fa-user"></i> Personal Growth</li>
-                            <li><i class="fa fa-globe"></i> Social Responsibility</li>
-                            <li><i class="fa fa-users"></i> Inclusivity and Diversity</li>
-                            <li><i class="fa fa-handshake"></i> Community Engagement</li>
+                            <li><i class="fas fa-check"></i> Excellence in academics</li>
+                            <li><i class="fas fa-check"></i> Holistic development</li>
+                            <li><i class="fas fa-check"></i> Community engagement</li>
                         </ul>
                     </div>
+                    <div class="about-image">
+                        <img src="images/About.jpg" alt="School Building">
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-popup">
-            <span class="close-btn" id="closeLogin">&times;</span>
+        <section id="announcements" class="announcements">
+            <div class="container">
+                <h2>Announcements</h2>
+                <div class="announcement-slider">
+                    <div class="announcement">
+                        <h3>School Reopening</h3>
+                        <p>We are excited to announce that the school will reopen on August 15th, 2023. Please ensure
+                            all necessary preparations are made.</p>
+                    </div>
+                    <div class="announcement">
+                        <h3>New Online Learning Platform</h3>
+                        <p>We have launched a new online learning platform to support our students' education. Login
+                            details will be sent to all parents and students soon.</p>
+                    </div>
+                    <div class="announcement">
+                        <h3>Parent-Teacher Conference</h3>
+                        <p>The annual parent-teacher conference is scheduled for September 5th, 2023. More details will
+                            be shared via email.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="events" class="events">
+            <div class="container">
+                <h2>Upcoming Events</h2>
+                <div class="event-list">
+                    <div class="event">
+                        <div class="event-date">
+                            <span class="day">15</span>
+                            <span class="month">Aug</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>First Day of School</h3>
+                            <p>Welcome back all students for the new academic year!</p>
+                        </div>
+                    </div>
+                    <div class="event">
+                        <div class="event-date">
+                            <span class="day">05</span>
+                            <span class="month">Sep</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Parent-Teacher Conference</h3>
+                            <p>Annual meeting for parents and teachers to discuss student progress.</p>
+                        </div>
+                    </div>
+                    <div class="event">
+                        <div class="event-date">
+                            <span class="day">20</span>
+                            <span class="month">Oct</span>
+                        </div>
+                        <div class="event-details">
+                            <h3>Science Fair</h3>
+                            <p>Students showcase their innovative science projects.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <h3>Get in Touch</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> 123 School Street, City, State 12345</p>
+                        <p><i class="fas fa-phone"></i> (123) 456-7890</p>
+                        <p><i class="fas fa-envelope"></i> info@dplmhs.edu</p>
+                        <div class="social-links">
+                            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                    <form class="contact-form">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <textarea placeholder="Your Message" required></textarea>
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Don Pablo Lorenzo Memorial High School. All rights reserved.</p>
+            <ul>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
             <h2>Login</h2>
-            <form action="#" method="post">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="login-btn">Login</button>
+            <form action="login.php" method="post">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
             </form>
             <div class="forgot-password">
                 <a href="#">Forgot Password?</a>
             </div>
         </div>
     </div>
-
-    <script>
-        // JavaScript to handle login popup
-        document.addEventListener('DOMContentLoaded', function () {
-            const loginButton = document.querySelector('.login a');
-            const loginOverlay = document.getElementById('loginOverlay');
-            const closeLogin = document.getElementById('closeLogin');
-
-            loginButton.addEventListener('click', function (e) {
-                e.preventDefault();
-                loginOverlay.style.display = 'block';
-            });
-
-            closeLogin.addEventListener('click', function () {
-                loginOverlay.style.display = 'none';
-            });
-
-            loginOverlay.addEventListener('click', function (e) {
-                if (e.target === loginOverlay) {
-                    loginOverlay.style.display = 'none';
-                }
-            });
-        });
-    </script>
 
     <script src="script.js"></script>
 </body>
