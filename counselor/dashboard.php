@@ -1,3 +1,19 @@
+<?php
+require_once '../appointment.class.php';
+require_once '../user.class.php';
+
+// Initialize classes
+$appointment = new Appointment();
+$user = new User();
+
+// Fetch students and counselors from the database
+$studentsCount = $user->getStudentCount();
+$counselorsCount = $user->getCounselorCount();
+$appointmentCount = $appointment->getAppointmentCount();
+$appointmentAllCount = $appointment->getAllAppointmentCount();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -202,15 +218,15 @@
             <div class="dashboard-cards">
                 <div class="card">
                     <h3>Total Students</h3>
-                    <p>500</p>
+                    <p><?=$studentsCount?></p>
                 </div>
                 <div class="card">
                     <h3>Total Appointments</h3>
-                    <p>50</p>
+                    <p><?=$appointmentAllCount?></p>
                 </div>
                 <div class="card">
                     <h3>Upcoming Appointments</h3>
-                    <p>10</p>
+                    <p><?=$appointmentCount?></p>
                 </div>
             </div>
             <div class="recent-cases">

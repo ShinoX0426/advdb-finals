@@ -255,6 +255,34 @@ class User {
     
         return []; // Return an empty array if no parents are found
     }
+
+    // Method to get all counselors
+    public function getCounselors() {
+        // Fetch counselors users
+        $sql = "SELECT user_id, first_name, last_name FROM users WHERE user_type = 'counselor'";
+        $stmt = $this->db->connect()->prepare($sql);
+    
+        // Execute and fetch the result
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all parent users as an associative array
+        }
+    
+        return []; // Return an empty array if no parents are found
+    }
+
+    public function getStudentCount(){
+        $sql = "SELECT COUNT(*) FROM users WHERE user_type LIKE 'student';";
+        $query = $this->db->connect()->prepare($sql);
+
+        return $query->execute();
+    }
+
+    public function getCounselorCount(){
+        $sql = "SELECT COUNT(*) FROM users WHERE user_type LIKE 'counselor';";
+        $query = $this->db->connect()->prepare($sql);
+
+        return $query->execute();
+    }
 }
 
 ?>
