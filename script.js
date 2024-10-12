@@ -1,21 +1,35 @@
-// Login Modal
-const loginBtn = document.getElementById('loginBtn');
-const loginModal = document.getElementById('loginModal');
-const closeBtn = document.getElementsByClassName('close')[0];
+    const loginBtn = document.getElementById('loginBtn');
+    const loginModal = document.getElementById('loginModal');
+    const closeBtn = document.getElementsByClassName('close')[0];
 
-loginBtn.onclick = function () {
-    loginModal.style.display = "block";
-}
+    // Error message container
+    const errorElement = document.getElementById('errorMessage');
 
-closeBtn.onclick = function () {
-    loginModal.style.display = "none";
-}
-
-window.onclick = function (event) {
-    if (event.target == loginModal) {
-        loginModal.style.display = "none";
+    // Function to check if there's an error
+    function hasError() {
+        // Check if errorElement contains any text (indicating an error)
+        return errorElement && errorElement.innerText.trim() !== '';
     }
-}
+
+    // Open the login modal when the login button is clicked
+    loginBtn.onclick = function () {
+        loginModal.style.display = "block";
+    }
+
+    // Close the modal if there's no error when the close button is clicked
+    closeBtn.onclick = function () {
+        if (!hasError()) {
+            loginModal.style.display = "none";
+        }
+    }
+
+    // Close the modal if the user clicks outside the modal, but only if there's no error
+    window.onclick = function (event) {
+        if (event.target == loginModal && !hasError()) {
+            loginModal.style.display = "none";
+        }
+    }
+
 
 // Smooth Scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

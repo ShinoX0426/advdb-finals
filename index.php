@@ -1,6 +1,9 @@
 <?php
 session_start();
+var_dump($_SESSION);
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,6 +14,35 @@ session_start();
     <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* The custom alert box */
+        .custom-alert {
+            z-index: 2; /* Make sure it stays above the background overlay */
+            position: absolute; 
+            left: 50%; 
+            top: 50%;
+            transform: translate(-50%, -50%); /* Perfectly centers the alert */
+            background-color: #f44336; /* Red background */
+            color: white; /* White text */
+            padding: 20px; /* Some padding */
+            border-radius: 10px; /* Rounded corners */
+            text-align: center; /* Center the text */
+            width: 300px; /* Set width for the alert box */
+        }
+
+        /* The overlay that blurs the background */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark overlay */
+            backdrop-filter: blur(5px); /* Blurs the background */
+            z-index: 1; /* Sits behind the alert */
+        }
+</style>
 </head>
 
 <body>
@@ -30,7 +62,7 @@ session_start();
                 </ul>
             </nav>
             <div class="login-btn">
-                <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if (isset($_SESSION['account'])): ?>
                     <a href="logout.php">Logout</a>
                 <?php else: ?>
                     <a href="#" id="loginBtn">Login</a>
@@ -173,6 +205,10 @@ session_start();
             <form action="login.php" method="post">
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="password" name="password" placeholder="Password" required>
+                <span>
+                    <br>
+                    <?=isset($_SESSION['error'])?>
+                </span>
                 <button type="submit">Login</button>
             </form>
             <div class="forgot-password">

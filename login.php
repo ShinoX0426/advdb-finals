@@ -1,55 +1,35 @@
 <?php
 session_start();
+require_once 'User.class.php';  // Assuming you have User.class.php
 
-// Database connection
-$host = 'localhost';
-$dbname = 'adv_guidance';
-$username = 'root';
-$password = '';
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
-}
-
-// Login process
+// Check if the form is submitted via POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    // Initialize the User class
+    $user = new User();
 
-    $stmt = $pdo->prepare("SELECT * FROM Users WHERE Username = :username");
-    $stmt->execute(['username' => $username]);
-    $user = $stmt->fetch();
+    // Clean the input (done inside User class)
+    $username = $user->clean_input($_POST['username']);
+    $password = $user->clean_input($_POST['password']);
 
-    if ($user && password_verify($password, $user['Password'])) {
-        // Login successful
-        $_SESSION['user_id'] = $user['UserID'];
-        $_SESSION['user_type'] = $user['UserType'];
-
-        // Redirect based on user type
-        switch ($user['UserType']) {
-            case 'Student':
-                header('Location: student_dashboard.php');
-                break;
-            case 'Teacher':
-                header('Location: teacher_dashboard.php');
-                break;
-            case 'Counselor':
-                header('Location: counselor_dashboard.php');
-                break;
-            case 'Admin':
-                header('Location: admin_dashboard.php');
-                break;
-            default:
-                header('Location: index.php');
-        }
-        exit();
-    } else {
-        $error = "Invalid username or password";
+    // Check if fields are empty
+    if (empty($username) || empty($password)) {
+        $_SESSION['error'] =   "Username and password are required";
         header('Location: index.php?error=' . urlencode($error));
         exit();
     }
+
+    // Call the login function from the User class
+    if ($user->login($username, $password)) {
+        // The login function already handles session and redirection
+        exit();
+    } else {
+        // Invalid login credentials
+        $_SESSION['error'] =   "Invalid username or password";
+        header('Location: index.php?error=' . urlencode($error));
+        exit();
+    }
+} else {
+    // Redirect to index if accessed without a POST request
+    header('Location: index.php');
+    exit();
 }
-?>

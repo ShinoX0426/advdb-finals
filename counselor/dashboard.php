@@ -186,8 +186,8 @@
     <div class="dashboard-container">
         <div class="sidebar">
             <ul>
-                <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="#"><i class="fas fa-users"></i> Students</a></li>
+                <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="students_view.php"><i class="fas fa-users"></i> Students</a></li>
                 <li><a href="#"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
                 <li><a href="#"><i class="fas fa-file-alt"></i> Cases</a></li>
                 <li><a href="#"><i class="fas fa-chart-bar"></i> Reports</a></li>

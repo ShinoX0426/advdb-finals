@@ -28,7 +28,7 @@
             </nav>
             <div class="user-actions">
                 <a href="#" class="notifications"><i class="fas fa-bell"></i></a>
-                <a href="../index.php" class="logout-btn" onclick="confirm(" Press a button!");"">Logout</a>
+                <a href="../index.php" class="logout-btn" onclick="confirm('Press a button!');">Logout</a>
             </div>
         </div>
     </header>
