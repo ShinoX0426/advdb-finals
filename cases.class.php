@@ -93,6 +93,32 @@ class Cases {
         return [];
     }
     
+    // Add this function to the User class or a Cases class if exists
+    public function getRecentCases() {
+        $sql = "
+            SELECT 
+                cases.case_id, 
+                users.first_name AS student_first_name, 
+                users.last_name AS student_last_name, 
+                cases.case_description, 
+                cases.created_at 
+            FROM 
+                cases
+            JOIN 
+                users ON cases.student_id = users.user_id
+            ORDER BY 
+                cases.created_at DESC
+            LIMIT 5"; // Adjust limit as needed
+
+        $stmt = $this->db->connect()->prepare($sql);
+
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return [];
+    }
+
 
     // Get cases by student
     public function getByStudent($student_id) {

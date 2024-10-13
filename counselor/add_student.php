@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             </select>
             <input type="date" name="dob" placeholder="Date of Birth" required>
             <input type="text" name="contact" placeholder="Contact Number" required>
-            <select name="parentId">
+            <select name="parentId" required>
                 <option value="">Select Parent</option>
                 <?php foreach ($parents as $parents): ?>
                     <option value="<?= $parents['user_id'] ?>">

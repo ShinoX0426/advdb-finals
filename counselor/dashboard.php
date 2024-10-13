@@ -1,16 +1,21 @@
 <?php
 require_once '../appointment.class.php';
 require_once '../user.class.php';
+require_once '../cases.class.php';
 
 // Initialize classes
 $appointment = new Appointment();
 $user = new User();
+$case = new Cases();
 
 // Fetch students and counselors from the database
 $studentsCount = $user->getStudentCount();
 $counselorsCount = $user->getCounselorCount();
 $appointmentCount = $appointment->getAppointmentCount();
 $appointmentAllCount = $appointment->getAllAppointmentCount();
+
+// Fetch recent cases
+$recentCases = $case->getRecentCases();
 
 ?>
 
@@ -242,27 +247,21 @@ $appointmentAllCount = $appointment->getAllAppointmentCount();
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>John Doe</td>
-                            <td>Academic Counseling</td>
-                            <td>2023-09-20</td>
-                            <td><a href="#" class="btn btn-small">View</a></td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Jane Smith</td>
-                            <td>Personal Counseling</td>
-                            <td>2023-09-19</td>
-                            <td><a href="#" class="btn btn-small">View</a></td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Mike Johnson</td>
-                            <td>Career Guidance</td>
-                            <td>2023-09-18</td>
-                            <td><a href="#" class="btn btn-small">View</a></td>
-                        </tr>
+                        <?php if (!empty($recentCases)) : ?>
+                            <?php foreach ($recentCases as $case) : ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($case['case_id']) ?></td>
+                                    <td><?= htmlspecialchars($case['student_first_name'] . ' ' . $case['student_last_name']) ?></td>
+                                    <td><?= htmlspecialchars($case['case_description']) ?></td>
+                                    <td><?= htmlspecialchars($case['created_at']) ?></td>
+                                    <td><a href="#" class="btn btn-small">View</a></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <tr>
+                                <td colspan="5">No recent cases available.</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
