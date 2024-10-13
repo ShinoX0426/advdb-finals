@@ -71,16 +71,28 @@ class Cases {
         return $query->execute();
     }
 
-    // Get all cases
     public function getAll() {
-        $sql = "SELECT * FROM cases";
+        // SQL query with JOIN to retrieve case and user details
+        $sql = "SELECT 
+                    cases.case_id,
+                    student.first_name AS student_first_name,
+                    student.last_name AS student_last_name,
+                    counselor.first_name AS counselor_first_name,
+                    counselor.last_name AS counselor_last_name,
+                    cases.case_status,
+                    cases.case_description
+                FROM cases
+                JOIN users AS student ON cases.student_id = student.user_id
+                JOIN users AS counselor ON cases.counselor_id = counselor.user_id";
+    
         $query = $this->db->connect()->prepare($sql);
-
+    
         if ($query->execute()) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
         return [];
     }
+    
 
     // Get cases by student
     public function getByStudent($student_id) {
