@@ -319,4 +319,25 @@ class User {
     }
 }
 
+// Create default accounts
+// $defaultUsers = [
+//     ['first_name' => 'Parent', 'middle_name' => '', 'last_name' => 'User', 'email' => 'parent@example.com', 'username' => 'abcde_parent', 'password' => '12345', 'user_type' => 'parent', 'date_of_birth' => '1970-01-01', 'contact_num' => '1234567890'],
+//     ['first_name' => 'Admin', 'middle_name' => '', 'last_name' => 'User', 'email' => 'admin@example.com', 'username' => 'abcde_admin', 'password' => '12345', 'user_type' => 'admin', 'date_of_birth' => '1970-01-01', 'contact_num' => '1234567890'],
+//     ['first_name' => 'Teacher', 'middle_name' => '', 'last_name' => 'User', 'email' => 'teacher@example.com', 'username' => 'abcde_teacher', 'password' => '12345', 'user_type' => 'teacher', 'date_of_birth' => '1970-01-01', 'contact_num' => '1234567890'],
+//     ['first_name' => 'Student', 'middle_name' => '', 'last_name' => 'User', 'email' => 'student@example.com', 'username' => 'abcde_student', 'password' => '12345', 'user_type' => 'student', 'date_of_birth' => '2000-01-01', 'contact_num' => '1234567890']
+// ];
+
+// foreach ($defaultUsers as $userData) {
+//     $user = new User();
+//     $user->first_name = $userData['first_name'];
+//     $user->middle_name = $userData['middle_name'];
+//     $user->last_name = $userData['last_name'];
+//     $user->email = $userData['email'];
+//     $user->username = $userData['username'];
+//     $user->password = $userData['password'];
+//     $user->user_type = $userData['user_type'];
+//     $user->date_of_birth = $userData['date_of_birth'];
+//     $user->contact_num = $userData['contact_num'];
+//     $user->add();
+// }
 ?>
