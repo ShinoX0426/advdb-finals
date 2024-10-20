@@ -137,8 +137,8 @@ class User {
                     case 'teacher':
                         header('Location: teacher/teacher.php');
                         break;
-                    case 'counselor':
-                        header('Location: counselor/dashboard.php');
+                    case 'parent':
+                        header('Location: parents/dashboard.php');
                         break;
                     case 'admin':
                         header('Location: counselor/dashboard.php');
@@ -231,8 +231,8 @@ class User {
         return []; // Return an empty array if no parents are found
     }    
 
-    public function getStudents(){
-        // Fetch student users
+    public function getStudents($parentId = null) {
+        // Base SQL query to fetch student users
         $sql = "
             SELECT 
                 s.user_id, s.first_name, s.middle_name, s.last_name, s.date_of_birth, s.contact_num, 
@@ -243,18 +243,27 @@ class User {
                 parentstudent ps ON s.user_id = ps.student_id
             LEFT JOIN 
                 users p ON ps.parent_id = p.user_id
-            WHERE 
-                s.user_type = 'student'
-            ";
+        ";
+
+        // Add condition if parentId is provided
+        if ($parentId !== null) {
+            $sql .= " WHERE ps.parent_id = :parentId";
+        }
+
         $stmt = $this->db->connect()->prepare($sql);
-    
+
+        // Bind parentId parameter if provided
+        if ($parentId !== null) {
+            $stmt->bindParam(':parentId', $parentId, PDO::PARAM_INT);
+        }
+
         // Execute and fetch the result
         if ($stmt->execute()) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all parent users as an associative array
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all student users as an associative array
         }
-    
-        return []; // Return an empty array if no parents are found
-    }
+
+        return []; // Return an empty array if no students are found
+    } 
 
     // Method to get all counselors
     public function getCounselors() {
@@ -282,6 +291,31 @@ class User {
         $query = $this->db->connect()->prepare($sql);
 
         return $query->execute();
+    }
+
+    public function getStudentsForParent($parentId) {
+        try {
+            // Prepare the SQL query
+            $stmt = $this->db->connect()->prepare("
+                SELECT u.UserID, u.Username, u.Email
+                FROM user u
+                INNER JOIN parent_student ps ON u.UserID = ps.StudentID
+                WHERE ps.ParentID = :parentId AND u.UserType = 'Customer' AND u.IsActive = 1
+            ");
+    
+            // Execute the query with the parent ID
+            $stmt->execute(['parentId' => $parentId]);
+    
+            // Fetch all results
+            $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            return $students;
+    
+        } catch (PDOException $e) {
+            // Handle any database errors
+            error_log("Database Error: " . $e->getMessage());
+            return false;
+        }
     }
 }
 

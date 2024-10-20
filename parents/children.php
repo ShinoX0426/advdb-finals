@@ -1,34 +1,32 @@
 <?php
-require_once '../appointment.class.php';
+session_start();
 require_once '../user.class.php';
-require_once '../cases.class.php';
 
-// Initialize classes
-$appointment = new Appointment();
+// Check if user is logged in and is a parent
+if (!isset($_SESSION['account']) || $_SESSION['account']['user_type'] !== 'parent') {
+    header('Location: ../index.php');
+    exit();
+}
+
 $user = new User();
-$case = new Cases();
+$parentId = $_SESSION['account']['user_id'];
+$parentName = $_SESSION['account']['first_name'] . ' ' . $_SESSION['account']['last_name'];
 
-// Fetch students and counselors from the database
-$studentsCount = $user->getStudentCount();
-$counselorsCount = $user->getCounselorCount();
-$appointmentCount = $appointment->getAppointmentCount();
-$appointmentAllCount = $appointment->getAllAppointmentCount();
-
-// Fetch recent cases
-$recentCases = $case->getRecentCases();
+// Fetch children/wards connected to the parent
+$children = $user->getStudents($parentId);
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Don Pablo Guidance Counseling</title>
-    <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
+    <title>Your Children/Ward - Don Pablo Guidance Counseling</title>
+    <link rel="shortcut icon" href="../images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        /* Copy the styles from the dashboard.php */
         * {
             margin: 0;
             padding: 0;
@@ -127,41 +125,17 @@ $recentCases = $case->getRecentCases();
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            text-decoration: none;
         }
 
-        .dashboard-cards {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 30%;
-        }
-
-        .card h3 {
-            margin-top: 0;
-            color: #0f3978;
-        }
-
-        .card p {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0 0;
-        }
-
-        .recent-cases {
+        .children-list {
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
 
-        .recent-cases h3 {
+        .children-list h3 {
             margin-top: 0;
             color: #0f3978;
             margin-bottom: 15px;
@@ -172,8 +146,7 @@ $recentCases = $case->getRecentCases();
             border-collapse: collapse;
         }
 
-        th,
-        td {
+        th, td {
             text-align: left;
             padding: 10px;
             border-bottom: 1px solid #ddd;
@@ -189,7 +162,6 @@ $recentCases = $case->getRecentCases();
         }
     </style>
 </head>
-
 <body>
     <header>
         <nav>
@@ -198,7 +170,7 @@ $recentCases = $case->getRecentCases();
                 <span>Don Pablo Guidance</span>
             </div>
             <div class="user-info">
-                <span>Welcome, Admin</span>
+                <span>Welcome, <?php echo htmlspecialchars($parentName); ?></span>
                 <a href="../logout.php" class="logout-btn">Logout</a>
             </div>
         </nav>
@@ -208,65 +180,47 @@ $recentCases = $case->getRecentCases();
         <div class="sidebar">
             <ul>
                 <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="students_view.php"><i class="fas fa-users"></i> Students</a></li>
-                <li><a href="#"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
-                <li><a href="#"><i class="fas fa-file-alt"></i> Cases</a></li>
-                <li><a href="#"><i class="fas fa-chart-bar"></i> Reports</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="children.php"><i class="fas fa-users"></i> Your Children/Ward</a></li>
+                <li><a href="set_meeting.php"><i class="fas fa-calendar-plus"></i> Set a Meeting</a></li>
+                <li><a href="case_history.php"><i class="fas fa-history"></i> Case History</a></li>
+                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
             </ul>
         </div>
         <div class="main-content">
             <div class="dashboard-header">
-                <h2>Dashboard Overview</h2>
-                <button class="btn">Generate Report</button>
+                <h2>Your Children/Ward</h2>
             </div>
-            <div class="dashboard-cards">
-                <div class="card">
-                    <h3>Total Students</h3>
-                    <p><?=$studentsCount?></p>
-                </div>
-                <div class="card">
-                    <h3>Total Appointments</h3>
-                    <p><?=$appointmentAllCount?></p>
-                </div>
-                <div class="card">
-                    <h3>Upcoming Appointments</h3>
-                    <p><?=$appointmentCount?></p>
-                </div>
-            </div>
-            <div class="recent-cases">
-                <h3>Recent Cases</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Student</th>
-                            <th>Issue</th>
-                            <th>Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($recentCases)) : ?>
-                            <?php foreach ($recentCases as $case) : ?>
+            <div class="children-list">
+                <h3>Children/Wards</h3>
+                <?php if (!empty($children)) : ?>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Date of Birth</th>
+                                <th>Contact Number</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($children as $child) : ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($case['case_id']) ?></td>
-                                    <td><?= htmlspecialchars($case['student_first_name'] . ' ' . $case['student_last_name']) ?></td>
-                                    <td><?= htmlspecialchars($case['case_description']) ?></td>
-                                    <td><?= htmlspecialchars($case['created_at']) ?></td>
-                                    <td><a href="#" class="btn btn-small">View</a></td>
+                                    <td><?php echo htmlspecialchars($child['first_name'] . ' ' . $child['middle_name'] . ' ' . $child['last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($child['date_of_birth']); ?></td>
+                                    <td><?php echo htmlspecialchars($child['contact_num']); ?></td>
+                                    <td>
+                                        <a href="set_meeting.php?student_id=<?php echo $child['user_id']; ?>" class="btn btn-small">Set Meeting</a>
+                                        <a href="case_history.php?student_id=<?php echo $child['user_id']; ?>" class="btn btn-small">View Cases</a>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
-                        <?php else : ?>
-                            <tr>
-                                <td colspan="5">No recent cases available.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                <?php else : ?>
+                    <p>No children/wards are currently connected to your account.</p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </body>
-
 </html>
