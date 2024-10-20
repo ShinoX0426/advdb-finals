@@ -2,7 +2,6 @@
 session_start();
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -204,10 +203,6 @@ session_start();
             <form action="login.php" method="post">
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="password" name="password" placeholder="Password" required>
-                <span>
-                    <br>
-                    <?=isset($_SESSION['error'])?>
-                </span>
                 <button type="submit">Login</button>
             </form>
             <div class="forgot-password">
@@ -215,6 +210,15 @@ session_start();
             </div>
         </div>
     </div>
+
+    <script>
+        // Check if there's an error in the PHP session
+        <?php if (isset($_SESSION['error'])): ?>
+            var errorMessage = "<?php echo $_SESSION['error']; ?>";
+            alert(errorMessage);
+            <?php unset($_SESSION['error']); // Clear the error after displaying it ?>
+        <?php endif; ?>
+    </script>
 
     <script src="script.js"></script>
 </body>
