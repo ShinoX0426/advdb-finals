@@ -4,10 +4,27 @@ require_once '../cases.class.php';
 $cases = new Cases();
 $allCases = $cases->getAll();
 
+if (isset($_GET['info'])) {
+    $info = $_GET['info'];
+    ?>
+    <script>
+        alert('<?= $info ?>');
+
+        // Use JavaScript to remove the query parameter from the URL
+        if (typeof history.replaceState === 'function') {
+            var url = window.location.href;
+            var newUrl = url.split('?')[0]; // Remove everything after '?'
+            window.history.replaceState(null, '', newUrl); // Update the URL without reloading the page
+        }
+    </script>
+    <?php
+}
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,30 +32,150 @@ $allCases = $cases->getAll();
     <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: #f7f7f7; }
-        header { background-color: #0f3978; padding: 1rem; color: white; }
-        nav { display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; }
-        .logo img { width: 40px; height: 40px; margin-right: 10px; }
-        .user-info { display: flex; align-items: center; }
-        .logout-btn { background-color: #fd9619; color: white; padding: 0.5rem 1rem; border-radius: 5px; text-decoration: none; margin-left: 1rem; }
-        .dashboard-container { display: flex; min-height: calc(100vh - 64px); }
-        .sidebar { width: 250px; background-color: #0f3978; color: white; padding: 20px; }
-        .sidebar ul { list-style-type: none; }
-        .sidebar ul li { margin-bottom: 15px; }
-        .sidebar ul li a { color: white; text-decoration: none; display: flex; align-items: center; }
-        .sidebar ul li a i { margin-right: 10px; }
-        .main-content { flex-grow: 1; padding: 20px; }
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn { background-color: #fd9619; color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer; }
-        .cases-table { background-color: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; }
-        th { background-color: #f2f2f2; }
-        .btn-small { padding: 0.25rem 0.5rem; font-size: 0.875rem; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        header {
+            background-color: #0f3978;
+            padding: 1rem;
+            color: white;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background-color: #fd9619;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-left: 1rem;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #0f3978;
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #fd9619;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cases-table {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            background-color: orange;
+            color: white;
+            border-radius: 10px;
+        }
+
+        .btn-small:hover {
+            color: black;
+            background-color: lightsalmon;
+        }
+
+
+        a {
+            text-decoration: none;
+        }
     </style>
 </head>
+
 <body>
     <header>
         <nav>
@@ -81,21 +218,29 @@ $allCases = $cases->getAll();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($allCases)) : ?>
-                            <?php foreach ($allCases as $case) : ?>
+                        <?php if (!empty($allCases)):
+                            $i = 1;
+                            ?>
+                            <?php foreach ($allCases as $case):
+                                ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($case['case_id']) ?></td>
-                                    <td><?= htmlspecialchars($case['student_first_name'] . ' ' . $case['student_last_name']) ?></td>
-                                    <td><?= htmlspecialchars($case['counselor_first_name'] . ' ' . $case['counselor_last_name']) ?></td>
+                                    <td><?= $i ?></td>
+                                    <td><?= htmlspecialchars($case['student_first_name'] . ' ' . $case['student_last_name']) ?>
+                                    </td>
+                                    <td><?= htmlspecialchars($case['counselor_first_name'] . ' ' . $case['counselor_last_name']) ?>
+                                    </td>
                                     <td><?= htmlspecialchars($case['case_status']) ?></td>
                                     <td><?= htmlspecialchars($case['case_description']) ?></td>
                                     <td>
-                                        <button class="btn-small">Edit</button>
-                                        <button class="btn-small">Delete</button>
+                                        <a href="#" class="btn-small">Edit</a>
+                                        <a href="delete_case.php?id=<?= $case['case_id'] ?>" class="btn-small">Delete</a>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php else : ?>
+                                <?php
+                                $i++;
+                            endforeach; ?>
+
+                        <?php else: ?>
                             <tr>
                                 <td colspan="6">No cases found</td>
                             </tr>
@@ -106,4 +251,5 @@ $allCases = $cases->getAll();
         </div>
     </div>
 </body>
+
 </html>

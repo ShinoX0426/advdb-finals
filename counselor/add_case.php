@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Set message based on result
     if ($result) {
         $message = "Case has been submitted successfully!";
+        header('location: cases_view.php');
     } else {
         $message = "Failed to submit the case. Please try again.";
     }
@@ -35,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,22 +44,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: #f7f7f7; }
-        header { background-color: #0f3978; padding: 1rem; color: white; }
-        nav { display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; }
-        .logo img { width: 40px; height: 40px; margin-right: 10px; }
-        .main-container { max-width: 800px; margin: 50px auto; padding: 20px; background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
-        form { display: flex; flex-direction: column; }
-        label { margin-bottom: 10px; font-weight: bold; }
-        select, input, textarea { padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px; width: 100%; }
-        textarea { resize: none; }
-        .btn { background-color: #fd9619; color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer; }
-        .message { margin-bottom: 20px; color: green; font-weight: bold; }
-        .error { margin-bottom: 20px; color: red; font-weight: bold; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        header {
+            background-color: #0f3978;
+            padding: 1rem;
+            color: white;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        select,
+        input,
+        textarea {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .btn {
+            background-color: #fd9619;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            color: green;
+            font-weight: bold;
+        }
+
+        .error {
+            margin-bottom: 20px;
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
     <header>
         <nav>
@@ -71,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>Add a New Case</h2>
 
         <!-- Display success or error message -->
-        <?php if (isset($message)) : ?>
+        <?php if (isset($message)): ?>
             <div class="<?= $result ? 'message' : 'error' ?>">
                 <?= htmlspecialchars($message) ?>
             </div>
@@ -117,4 +193,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 </body>
+
 </html>

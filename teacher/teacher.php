@@ -23,12 +23,13 @@
                 <ul>
                     <li><a href="#dashboard">Dashboard</a></li>
                     <li><a href="#class-list">Class List</a></li>
+                    <li><a href="#activities">Activities</a></li>
                     <li><a href="#reports">Reports</a></li>
                 </ul>
             </nav>
             <div class="user-actions">
                 <a href="#" class="notifications"><i class="fas fa-bell"></i></a>
-                <a href="../index.php" class="logout-btn" onclick="confirm('Press a button!');">Logout</a>
+                <a href="../logout.php" class="logout-btn" onclick="confirm('Press a button!');">Logout</a>
             </div>
         </div>
     </header>
@@ -101,6 +102,37 @@
             </div>
         </section>
 
+        <section id="activities" class="activities">
+            <h2>Course Activities</h2>
+            <div class="activities-actions">
+                <button id="addActivityBtn" class="btn">Add New Activity</button>
+                <input type="text" id="courseTitle" placeholder="Enter course title" class="course-title-input">
+            </div>
+
+            <div class="activities-list">
+                <!-- Activities will be dynamically populated here -->
+            </div>
+
+            <!-- Add Activity Modal -->
+            <div id="addActivityModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Add New Activity</h2>
+                    <form id="addActivityForm">
+                        <select name="type" required>
+                            <option value="">Select Activity Type</option>
+                            <option value="homework">Homework</option>
+                            <option value="quiz">Quiz</option>
+                            <option value="project">Project</option>
+                        </select>
+                        <input type="text" name="description" placeholder="Activity Description" required>
+                        <input type="date" name="dueDate" required>
+                        <button type="submit" class="btn">Add Activity</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
         <section id="reports" class="reports">
             <h2>Reports</h2>
             <form id="violationReportForm">
@@ -115,6 +147,8 @@
                 <button type="submit" class="btn">Submit Report</button>
             </form>
         </section>
+
+
     </main>
 
     <footer>
@@ -135,6 +169,8 @@
             </form>
         </div>
     </div>
+
+
 
     <script src="teacher-dashboard.js"></script>
 </body>

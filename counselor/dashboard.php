@@ -209,10 +209,10 @@ $recentCases = $case->getRecentCases();
             <ul>
                 <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="students_view.php"><i class="fas fa-users"></i> Students</a></li>
-                <li><a href="#"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
-                <li><a href="#"><i class="fas fa-file-alt"></i> Cases</a></li>
-                <li><a href="#"><i class="fas fa-chart-bar"></i> Reports</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="appointment_view.php"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+                <li><a href="cases_view.php"><i class="fas fa-file-alt"></i> Cases</a></li>
+                <li><a href="report_view.php"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
             </ul>
         </div>
         <div class="main-content">
@@ -223,15 +223,15 @@ $recentCases = $case->getRecentCases();
             <div class="dashboard-cards">
                 <div class="card">
                     <h3>Total Students</h3>
-                    <p><?=$studentsCount?></p>
+                    <p><?= $studentsCount ?></p>
                 </div>
                 <div class="card">
                     <h3>Total Appointments</h3>
-                    <p><?=$appointmentAllCount?></p>
+                    <p><?= $appointmentAllCount ?></p>
                 </div>
                 <div class="card">
                     <h3>Upcoming Appointments</h3>
-                    <p><?=$appointmentCount?></p>
+                    <p><?= $appointmentCount ?></p>
                 </div>
             </div>
             <div class="recent-cases">
@@ -247,17 +247,18 @@ $recentCases = $case->getRecentCases();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($recentCases)) : ?>
-                            <?php foreach ($recentCases as $case) : ?>
+                        <?php if (!empty($recentCases)): ?>
+                            <?php foreach ($recentCases as $case): ?>
                                 <tr>
                                     <td><?= htmlspecialchars($case['case_id']) ?></td>
-                                    <td><?= htmlspecialchars($case['student_first_name'] . ' ' . $case['student_last_name']) ?></td>
+                                    <td><?= htmlspecialchars($case['student_first_name'] . ' ' . $case['student_last_name']) ?>
+                                    </td>
                                     <td><?= htmlspecialchars($case['case_description']) ?></td>
                                     <td><?= htmlspecialchars($case['created_at']) ?></td>
                                     <td><a href="#" class="btn btn-small">View</a></td>
                                 </tr>
                             <?php endforeach; ?>
-                        <?php else : ?>
+                        <?php else: ?>
                             <tr>
                                 <td colspan="5">No recent cases available.</td>
                             </tr>

@@ -2,7 +2,8 @@
 
 require_once 'database.php';
 
-class User {
+class User
+{
     public $id = '';
     public $first_name = '';
     public $middle_name = '';
@@ -18,32 +19,73 @@ class User {
 
     protected $db;
 
-    function __construct(){
+    function __construct()
+    {
         $this->db = new Database();
     }
 
     // Create new user
-    function add() {
+    function add()
+    {
         $sql = "INSERT INTO Users (first_name, middle_name, last_name, email, username, password, user_type, date_of_birth, contact_num) 
-                VALUES (:first_name, :middle_name, :last_name, :email, :username, :password, :user_type, :date_of_birth, :contact_num);";
-        $query = $this->db->connect()->prepare($sql);
+            VALUES (:first_name, :middle_name, :last_name, :email, :username, :password, :user_type, :date_of_birth, :contact_num)";
 
-        $query->bindParam(':first_name', $this->first_name);
-        $query->bindParam(':middle_name', $this->middle_name);
-        $query->bindParam(':last_name', $this->last_name);
-        $query->bindParam(':email', $this->email);
-        $query->bindParam(':username', $this->username);
-        $hashpassword = password_hash($this->password, PASSWORD_DEFAULT);
-        $query->bindParam(':password', $hashpassword);
-        $query->bindParam(':user_type', $this->user_type);
-        $query->bindParam(':date_of_birth', $this->date_of_birth);
-        $query->bindParam(':contact_num', $this->contact_num);
+        try {
+            $query = $this->db->connect()->prepare($sql);
 
-        return $query->execute();
+            $query->bindParam(':first_name', $this->first_name);
+            $query->bindParam(':middle_name', $this->middle_name);
+            $query->bindParam(':last_name', $this->last_name);
+            $query->bindParam(':email', $this->email);
+            $query->bindParam(':username', $this->username);
+            $hashpassword = password_hash($this->password, PASSWORD_DEFAULT);
+            $query->bindParam(':password', $hashpassword);
+            $query->bindParam(':user_type', $this->user_type);
+            $query->bindParam(':date_of_birth', $this->date_of_birth);
+            $query->bindParam(':contact_num', $this->contact_num);
+
+            $result = $query->execute();
+
+            if ($result) {
+                return [
+                    'success' => true,
+                    'message' => 'User added successfully',
+                    'user_id' => $this->db->connect()->lastInsertId()
+                ];
+            } else {
+                $errorInfo = $query->errorInfo();
+                return [
+                    'success' => false,
+                    'message' => 'Failed to add user',
+                    'error' => $errorInfo[2],
+                    'error_code' => $errorInfo[1]
+                ];
+            }
+        } catch (PDOException $e) {
+            return [
+                'success' => false,
+                'message' => 'Database error occurred',
+                'error' => $e->getMessage(),
+                'error_code' => $e->getCode()
+            ];
+        }
     }
 
     // Read or fetch user by username
-    function fetch($username) {
+    function fetch($id)
+    {
+        $sql = "SELECT * FROM Users WHERE user_id = :user_id LIMIT 1;";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':user_id', $id);
+        $data = null;
+        if ($query->execute()) {
+            $data = $query->fetch();
+        }
+        return $data;
+    }
+
+    function fetchByUsername($username)
+    {
         $sql = "SELECT * FROM Users WHERE username = :username LIMIT 1;";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':username', $username);
@@ -55,7 +97,8 @@ class User {
     }
 
     // Update user
-    function update($id) {
+    function update($id)
+    {
         $sql = "UPDATE Users SET 
                 first_name = :first_name, 
                 middle_name = :middle_name, 
@@ -82,7 +125,8 @@ class User {
     }
 
     // Delete user
-    function delete($id) {
+    function delete($id)
+    {
         $sql = "DELETE FROM Users WHERE user_id = :id;";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':id', $id);
@@ -91,7 +135,8 @@ class User {
     }
 
     // Check if username exists (excluding a specific ID for update operations)
-    function usernameExist($username, $excludeID = null) {
+    function usernameExist($username, $excludeID = null)
+    {
         $sql = "SELECT COUNT(*) FROM Users WHERE username = :username";
         if ($excludeID) {
             $sql .= " AND user_id != :excludeID";
@@ -110,25 +155,26 @@ class User {
     }
 
     // Login function
-    function login($username, $password) {
+    function login($username, $password)
+    {
         // Fetch user data by username
         $sql = "SELECT * FROM Users WHERE username = :username LIMIT 1;";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':username', $username);
-    
+
         if ($query->execute()) {
             $data = $query->fetch();
-    
+
             // Check if the user exists and the password matches
             if ($data && password_verify($password, $data['password'])) {
                 // Start session if not already started
                 if (session_status() === PHP_SESSION_NONE) {
                     session_start();
                 }
-    
+
                 // Store user data in session
                 $_SESSION['account'] = $data;
-    
+
                 // Redirect based on user type
                 switch ($data['user_type']) { // Fetch user_type from $data (fetched user record)
                     case 'student':
@@ -149,18 +195,20 @@ class User {
                 exit();
             }
         }
-        
+
         // Return false if login fails (invalid credentials)
         return false;
     }
 
     // Clean input function for security
-    public function clean_input($data) {
+    public function clean_input($data)
+    {
         return htmlspecialchars(strip_tags(trim($data)));
     }
-    
+
     // Register new user
-    public function register($firstName, $middleName, $lastName, $username, $password, $confirmPassword, $userType, $dob, $contact) {
+    public function register($firstName, $middleName, $lastName, $username, $password, $confirmPassword, $userType, $dob, $contact)
+    {
         // Check if username exists
         if ($this->usernameExists($username)) {
             return 'Username already taken.';
@@ -203,14 +251,16 @@ class User {
     }
 
     // Check if username already exists
-    public function usernameExists($username) {
+    public function usernameExists($username)
+    {
         $stmt = $this->db->connect()->prepare("SELECT COUNT(*) FROM Users WHERE username = :username");
         $stmt->bindParam(':username', $username);
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     }
 
-    public function logout(){
+    public function logout()
+    {
         session_start();
         session_unset();
         session_destroy();
@@ -218,20 +268,22 @@ class User {
         header('location: index.php');
     }
 
-    public function getParent() {
+    public function getParent()
+    {
         // Fetch parent users
         $sql = "SELECT user_id, first_name, last_name FROM users WHERE user_type = 'parent'";
         $stmt = $this->db->connect()->prepare($sql);
-    
+
         // Execute and fetch the result
         if ($stmt->execute()) {
             return $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all parent users as an associative array
         }
-    
-        return []; // Return an empty array if no parents are found
-    }    
 
-    public function getStudents($parentId = null) {
+        return []; // Return an empty array if no parents are found
+    }
+
+    public function getStudents($parentId = null)
+    {
         // Base SQL query to fetch student users
         $sql = "
             SELECT 
@@ -248,6 +300,8 @@ class User {
         // Add condition if parentId is provided
         if ($parentId !== null) {
             $sql .= " WHERE ps.parent_id = :parentId";
+        } else {
+            $sql .= " WHERE s.user_type = 'student'";
         }
 
         $stmt = $this->db->connect()->prepare($sql);
@@ -263,37 +317,45 @@ class User {
         }
 
         return []; // Return an empty array if no students are found
-    } 
+    }
 
     // Method to get all counselors
-    public function getCounselors() {
+    public function getCounselors()
+    {
         // Fetch counselors users
-        $sql = "SELECT user_id, first_name, last_name FROM users WHERE user_type = 'counselor'";
+        $sql =
+            "SELECT user_id, first_name, last_name 
+        FROM users WHERE user_type = 'counselor'
+        OR  user_type = 'admin'";
+
         $stmt = $this->db->connect()->prepare($sql);
-    
+
         // Execute and fetch the result
         if ($stmt->execute()) {
             return $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all parent users as an associative array
         }
-    
+
         return []; // Return an empty array if no parents are found
     }
 
-    public function getStudentCount(){
+    public function getStudentCount()
+    {
         $sql = "SELECT COUNT(*) FROM users WHERE user_type LIKE 'student';";
         $query = $this->db->connect()->prepare($sql);
 
         return $query->execute();
     }
 
-    public function getCounselorCount(){
+    public function getCounselorCount()
+    {
         $sql = "SELECT COUNT(*) FROM users WHERE user_type LIKE 'counselor';";
         $query = $this->db->connect()->prepare($sql);
 
         return $query->execute();
     }
 
-    public function getStudentsForParent($parentId) {
+    public function getStudentsForParent($parentId)
+    {
         try {
             // Prepare the SQL query
             $stmt = $this->db->connect()->prepare("
@@ -302,15 +364,15 @@ class User {
                 INNER JOIN parent_student ps ON u.UserID = ps.StudentID
                 WHERE ps.ParentID = :parentId AND u.UserType = 'Customer' AND u.IsActive = 1
             ");
-    
+
             // Execute the query with the parent ID
             $stmt->execute(['parentId' => $parentId]);
-    
+
             // Fetch all results
             $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
             return $students;
-    
+
         } catch (PDOException $e) {
             // Handle any database errors
             error_log("Database Error: " . $e->getMessage());
@@ -320,24 +382,23 @@ class User {
 }
 
 // Create default accounts
-// $defaultUsers = [
-//     ['first_name' => 'Parent', 'middle_name' => '', 'last_name' => 'User', 'email' => 'parent@example.com', 'username' => 'abcde_parent', 'password' => '12345', 'user_type' => 'parent', 'date_of_birth' => '1970-01-01', 'contact_num' => '1234567890'],
-//     ['first_name' => 'Admin', 'middle_name' => '', 'last_name' => 'User', 'email' => 'admin@example.com', 'username' => 'abcde_admin', 'password' => '12345', 'user_type' => 'admin', 'date_of_birth' => '1970-01-01', 'contact_num' => '1234567890'],
-//     ['first_name' => 'Teacher', 'middle_name' => '', 'last_name' => 'User', 'email' => 'teacher@example.com', 'username' => 'abcde_teacher', 'password' => '12345', 'user_type' => 'teacher', 'date_of_birth' => '1970-01-01', 'contact_num' => '1234567890'],
-//     ['first_name' => 'Student', 'middle_name' => '', 'last_name' => 'User', 'email' => 'student@example.com', 'username' => 'abcde_student', 'password' => '12345', 'user_type' => 'student', 'date_of_birth' => '2000-01-01', 'contact_num' => '1234567890']
-// ];
+$defaultUsers = [
+    ['first_name' => 'Parent', 'middle_name' => '', 'last_name' => 'User', 'email' => 'parent@example.com', 'username' => 'abcde_parent', 'password' => '12345', 'user_type' => 'parent', 'date_of_birth' => '1970-01-01', 'contact_num' => '1234567890'],
+    ['first_name' => 'Admin', 'middle_name' => '', 'last_name' => 'User', 'email' => 'admin@example.com', 'username' => 'abcde_admin', 'password' => '12345', 'user_type' => 'admin', 'date_of_birth' => '1970-01-01', 'contact_num' => '1234567890'],
+    ['first_name' => 'Teacher', 'middle_name' => '', 'last_name' => 'User', 'email' => 'teacher@example.com', 'username' => 'abcde_teacher', 'password' => '12345', 'user_type' => 'teacher', 'date_of_birth' => '1970-01-01', 'contact_num' => '1234567890'],
+    ['first_name' => 'Student', 'middle_name' => '', 'last_name' => 'User', 'email' => 'student@example.com', 'username' => 'abcde_student', 'password' => '12345', 'user_type' => 'student', 'date_of_birth' => '2000-01-01', 'contact_num' => '1234567890']
+];
 
-// foreach ($defaultUsers as $userData) {
-//     $user = new User();
-//     $user->first_name = $userData['first_name'];
-//     $user->middle_name = $userData['middle_name'];
-//     $user->last_name = $userData['last_name'];
-//     $user->email = $userData['email'];
-//     $user->username = $userData['username'];
-//     $user->password = $userData['password'];
-//     $user->user_type = $userData['user_type'];
-//     $user->date_of_birth = $userData['date_of_birth'];
-//     $user->contact_num = $userData['contact_num'];
-//     $user->add();
-// }
-?>
+foreach ($defaultUsers as $userData) {
+    $user = new User();
+    $user->first_name = $userData['first_name'];
+    $user->middle_name = $userData['middle_name'];
+    $user->last_name = $userData['last_name'];
+    $user->email = $userData['email'];
+    $user->username = $userData['username'];
+    $user->password = $userData['password'];
+    $user->user_type = $userData['user_type'];
+    $user->date_of_birth = $userData['date_of_birth'];
+    $user->contact_num = $userData['contact_num'];
+    $user->add();
+}

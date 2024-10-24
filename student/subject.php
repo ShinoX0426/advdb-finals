@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
+    <title>Student Dashboard - Subjects</title>
     <style>
+        /* Base styles (same as main dashboard) */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -79,71 +80,46 @@
             text-decoration: none;
         }
 
-        .dashboard-widgets {
+        /* Subjects specific styles */
+        .subjects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
         }
 
-        .widget {
+        .subject-card {
             background-color: white;
-            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
 
-        .widget h3 {
-            font-size: 18px;
+        .subject-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #1e40af;
+        }
+
+        .subject-card p {
+            color: #4b5563;
             margin-bottom: 15px;
         }
 
-        .widget .value {
-            font-size: 36px;
-            font-weight: bold;
-        }
-
-        .widget .label {
+        .subject-card .teacher {
+            font-style: italic;
             color: #6b7280;
         }
 
-        .attendance .value {
-            color: #16a34a;
+        .activities-list {
+            list-style-type: none;
+            margin-top: 15px;
         }
 
-        .performance .value {
-            color: #2563eb;
-        }
-
-        .penalties .value {
-            color: #dc2626;
-        }
-
-        .recent-activity h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        th {
-            background-color: #f9fafb;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 12px;
-            color: #4b5563;
+        .activities-list li {
+            background-color: #f3f4f6;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -164,50 +140,31 @@
     </div>
     <div class="main-content">
         <header>
-            <h2>Dashboard</h2>
+            <h2>My Subjects</h2>
             <a href="../logout.php" class="logout-btn">Logout</a>
         </header>
-        <div class="dashboard-widgets">
-            <div class="widget attendance">
-                <h3>Attendance Overview</h3>
-                <p class="value">95%</p>
-                <p class="label">Current month</p>
+        <div class="subjects-grid">
+            <div class="subject-card">
+                <h3>Mathematics</h3>
+                <p class="teacher">Teacher: Dr. Jane Smith</p>
+                <p>Advanced Calculus and Linear Algebra</p>
+                <ul class="activities-list">
+                    <li>Homework due: Oct 20</li>
+                    <li>Quiz: Oct 22</li>
+                    <li>Group Project: Nov 5</li>
+                </ul>
             </div>
-            <div class="widget performance">
-                <h3>Performance Summary</h3>
-                <p class="value">90%</p>
-                <p class="label">Average grade</p>
+            <div class="subject-card">
+                <h3>Physics</h3>
+                <p class="teacher">Teacher: Prof. John Doe</p>
+                <p>Mechanics and Thermodynamics</p>
+                <ul class="activities-list">
+                    <li>Lab Report due: Oct 18</li>
+                    <li>Midterm Exam: Oct 25</li>
+                    <li>Research Paper: Nov 10</li>
+                </ul>
             </div>
-            <div class="widget penalties">
-                <h3>Active Penalties</h3>
-                <p class="value">1</p>
-                <p class="label">Requires attention</p>
-            </div>
-        </div>
-        <div class="recent-activity">
-            <h3>Recent Activity</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Subject</th>
-                        <th>Activity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>2023-10-15</td>
-                        <td>Mathematics</td>
-                        <td>Homework submitted</td>
-                    </tr>
-                    <tr>
-                        <td>2023-10-14</td>
-                        <td>Science</td>
-                        <td>Quiz completed</td>
-                    </tr>
-                    <!-- Add more rows as needed -->
-                </tbody>
-            </table>
+            <!-- Add more subject cards as needed -->
         </div>
     </div>
 </body>

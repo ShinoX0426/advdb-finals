@@ -2,7 +2,8 @@
 
 require_once 'database.php';
 
-class Appointment {
+class Appointment
+{
     public $request_id = '';
     public $student_id = '';
     public $parent_id = '';
@@ -15,43 +16,40 @@ class Appointment {
 
     protected $db;
 
-    function __construct(){
+    function __construct()
+    {
         $this->db = new Database();
     }
 
-    public function add($student_id, $counselor_id, $request_date, $reason) {
-        try {
-            // Fetch the parent_id from the parentstudent table based on student_id
-            $stmt = $this->db->connect()->prepare("SELECT parent_id FROM parentstudent WHERE student_id = :student_id");
-            $stmt->bindParam(':student_id', $student_id);
-            $stmt->execute();
-            $parent_id = $stmt->fetchColumn();
-    
-            // Check if parent_id exists
-            if (!$parent_id) {
-                // Handle case where the parent_id is not found
-                return false;
-            }
-    
-            // Insert the appointment request including parent_id
-            $stmt = $this->db->connect()->prepare("INSERT INTO appointmentrequests (student_id, counselor_id, request_date, reason, parent_id) 
-                                        VALUES (:student_id, :counselor_id, :request_date, :reason, :parent_id)");
-            $stmt->bindParam(':student_id', $student_id);
-            $stmt->bindParam(':counselor_id', $counselor_id);
-            $stmt->bindParam(':request_date', $request_date);
-            $stmt->bindParam(':reason', $reason);
-            $stmt->bindParam(':parent_id', $parent_id);
-    
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            // Handle error
-            echo "Error: " . $e->getMessage();
+    public function add($student_id, $counselor_id, $request_date, $reason)
+    {
+        // Fetch the parent_id from the parentstudent table based on student_id
+        $stmt = $this->db->connect()->prepare("SELECT parent_id FROM parentstudent WHERE student_id = :student_id");
+        $stmt->bindParam(':student_id', $student_id);
+        $stmt->execute();
+        $parent_id = $stmt->fetchColumn();
+
+        // Check if parent_id exists
+        if (!$parent_id) {
+            // Handle case where the parent_id is not found
             return false;
         }
+
+        // Insert the appointment request including parent_id
+        $stmt = $this->db->connect()->prepare("INSERT INTO appointmentrequests (student_id, counselor_id, request_date, reason, parent_id) 
+                                    VALUES (:student_id, :counselor_id, :request_date, :reason, :parent_id)");
+        $stmt->bindParam(':student_id', $student_id);
+        $stmt->bindParam(':counselor_id', $counselor_id);
+        $stmt->bindParam(':request_date', $request_date);
+        $stmt->bindParam(':reason', $reason);
+        $stmt->bindParam(':parent_id', $parent_id);
+
+        return $stmt->execute();
     }
 
     // Fetch an appointment by request_id
-    function fetch($request_id) {
+    function fetch($request_id)
+    {
         $sql = "SELECT * FROM appointmentrequests WHERE request_id = :request_id LIMIT 1;";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':request_id', $request_id);
@@ -63,7 +61,8 @@ class Appointment {
     }
 
     // Update an appointment
-    function update($request_id) {
+    function update($request_id)
+    {
         $sql = "UPDATE appointmentrequests SET 
                 student_id = :student_id,
                 parent_id = :parent_id,
@@ -87,7 +86,8 @@ class Appointment {
     }
 
     // Delete an appointment
-    function delete($request_id) {
+    function delete($request_id)
+    {
         $sql = "DELETE FROM appointmentrequests WHERE request_id = :request_id;";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':request_id', $request_id);
@@ -95,7 +95,8 @@ class Appointment {
         return $query->execute();
     }
 
-    public function getAll() {
+    public function getAll()
+    {
         try {
             // Fetch appointments with student and counselor names
             $stmt = $this->db->connect()->prepare(
@@ -119,10 +120,11 @@ class Appointment {
             return [];
         }
     }
-    
+
 
     // Fetch appointments by status
-    function getByStatus($status) {
+    function getByStatus($status)
+    {
         $sql = "SELECT * FROM appointmentrequests WHERE status = :status;";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':status', $status);
@@ -134,7 +136,8 @@ class Appointment {
     }
 
     // Fetch appointments by counselor
-    function getByCounselor($counselor_id) {
+    function getByCounselor($counselor_id)
+    {
         $sql = "SELECT * FROM appointmentrequests WHERE counselor_id = :counselor_id;";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':counselor_id', $counselor_id);
@@ -146,7 +149,8 @@ class Appointment {
     }
 
     // Fetch appointments by student
-    function getByStudent($student_id) {
+    function getByStudent($student_id)
+    {
         $sql = "SELECT * FROM appointmentrequests WHERE student_id = :student_id;";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':student_id', $student_id);
@@ -157,14 +161,16 @@ class Appointment {
         return $data;
     }
 
-    function getAppointmentCount() {
+    function getAppointmentCount()
+    {
         $sql = "SELECT COUNT(*) FROM appointmentrequests WHERE status LIKE 'pending' OR 'approved';";
         $query = $this->db->connect()->prepare($sql);
 
         return $query->execute();
     }
 
-    function getAllAppointmentCount() {
+    function getAllAppointmentCount()
+    {
         $sql = "SELECT COUNT(*) FROM appointmentrequests;";
         $query = $this->db->connect()->prepare($sql);
 
@@ -172,9 +178,8 @@ class Appointment {
     }
 
     // Clean input function for security
-    public function clean_input($data) {
+    public function clean_input($data)
+    {
         return htmlspecialchars(strip_tags(trim($data)));
     }
 }
-
-?>

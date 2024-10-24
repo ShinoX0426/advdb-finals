@@ -5,7 +5,7 @@ $user = new User();
 
 $parents = [];
 $parents = $user->getParent();
-var_dump($parents);
+// var_dump($parents);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 

@@ -364,3 +364,104 @@ th {
         opacity: 1;
     }
 }
+
+/* Activities Section Styles */
+.activities {
+    padding: 30px;
+}
+
+.activities h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #0f3978;
+}
+
+.activities-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.course-title-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 300px;
+}
+
+.activities-list {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.activity-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item .activity-type {
+    font-weight: 500;
+    color: #0f3978;
+    min-width: 100px;
+}
+
+.activity-item .activity-description {
+    flex-grow: 1;
+    padding: 0 20px;
+}
+
+.activity-item .due-date {
+    color: #666;
+    margin-right: 30px;
+}
+
+.activity-item:hover {
+    background: #fff;
+}
+
+.activity-item .activity-actions {
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.activity-item:hover .activity-actions {
+    opacity: 1;
+}
+
+#addActivityForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#addActivityForm select,
+#addActivityForm input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.activity-type.homework {
+    color: #1976d2;
+}
+
+.activity-type.quiz {
+    color: #c2185b;
+}
+
+.activity-type.project {
+    color: #689f38;
+}

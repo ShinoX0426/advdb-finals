@@ -1,7 +1,8 @@
 <?php
 require_once 'database.php';
 
-class Cases {
+class Cases
+{
     public $case_id = '';
     public $student_id = '';
     public $counselor_id = '';
@@ -12,26 +13,29 @@ class Cases {
 
     protected $db;
 
-    function __construct() {
+    function __construct()
+    {
         $this->db = new Database();
     }
 
-    public function add($student_id, $counselor_id, $case_description, $status) {
+    public function add($student_id, $counselor_id, $case_description, $status)
+    {
         $sql = "INSERT INTO cases (student_id, counselor_id, case_description, case_status) VALUES (:student_id, :counselor_id, :case_description, :case_status)";
         $stmt = $this->db->connect()->prepare($sql);
-        
+
         // Bind parameters
         $stmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
         $stmt->bindParam(':counselor_id', $counselor_id, PDO::PARAM_INT);
         $stmt->bindParam(':case_description', $case_description, PDO::PARAM_STR);
         $stmt->bindParam(':case_status', $status, PDO::PARAM_STR);
-    
+
         return $stmt->execute(); // Returns true on success
     }
-    
+
 
     // Get a case by its ID
-    public function get($case_id) {
+    public function get($case_id)
+    {
         $sql = "SELECT * FROM cases WHERE case_id = :case_id LIMIT 1";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':case_id', $case_id);
@@ -43,7 +47,8 @@ class Cases {
     }
 
     // Update an existing case
-    public function update($case_id) {
+    public function update($case_id)
+    {
         $sql = "UPDATE cases SET 
                     student_id = :student_id, 
                     counselor_id = :counselor_id, 
@@ -63,7 +68,8 @@ class Cases {
     }
 
     // Delete a case
-    public function delete($case_id) {
+    public function delete($case_id)
+    {
         $sql = "DELETE FROM cases WHERE case_id = :case_id";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':case_id', $case_id);
@@ -71,7 +77,8 @@ class Cases {
         return $query->execute();
     }
 
-    public function getAll() {
+    public function getAll()
+    {
         // SQL query with JOIN to retrieve case and user details
         $sql = "SELECT 
                     cases.case_id,
@@ -84,17 +91,18 @@ class Cases {
                 FROM cases
                 JOIN users AS student ON cases.student_id = student.user_id
                 JOIN users AS counselor ON cases.counselor_id = counselor.user_id";
-    
+
         $query = $this->db->connect()->prepare($sql);
-    
+
         if ($query->execute()) {
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
         return [];
     }
-    
+
     // Add this function to the User class or a Cases class if exists
-    public function getRecentCases() {
+    public function getRecentCases()
+    {
         $sql = "
             SELECT 
                 cases.case_id, 
@@ -121,7 +129,8 @@ class Cases {
 
 
     // Get cases by student
-    public function getByStudent($student_id) {
+    public function getByStudent($student_id)
+    {
         $sql = "SELECT * FROM cases WHERE student_id = :student_id";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':student_id', $student_id);
@@ -133,7 +142,8 @@ class Cases {
     }
 
     // Get cases by counselor
-    public function getByCounselor($counselor_id) {
+    public function getByCounselor($counselor_id)
+    {
         $sql = "SELECT * FROM cases WHERE counselor_id = :counselor_id";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':counselor_id', $counselor_id);
@@ -145,7 +155,8 @@ class Cases {
     }
 
     // Clean input function for security
-    public function clean_input($data) {
+    public function clean_input($data)
+    {
         return htmlspecialchars(strip_tags(trim($data)));
     }
 }
