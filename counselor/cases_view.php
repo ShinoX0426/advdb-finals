@@ -185,7 +185,7 @@ if (isset($_GET['info'])) {
             </div>
             <div class="user-info">
                 <span>Welcome, Counselor</span>
-                <a href="#" class="logout-btn">Logout</a>
+                <a href="../logout.php" class="logout-btn">Logout</a>
             </div>
         </nav>
     </header>

@@ -92,8 +92,8 @@ $appointments = $appointment->getAll();
                                     <td><?= htmlspecialchars($appointment['status']) ?></td>
                                     <td><?= htmlspecialchars($appointment['reason']) ?></td>
                                     <td>
-                                        <button class="btn-small">Edit</button>
-                                        <button class="btn-small">Delete</button>
+                                        <a href="edit_appointments.php?id=<?= $appointment['request_id'] ?>" class="btn-small">Edit</a>
+                                        <a href="delete_appointment.php?id=<?=$appointment['request_id']?>" class="btn-small">Delete</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

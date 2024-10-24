@@ -6,7 +6,7 @@ class Database
     private $host = 'localhost';
     private $username = 'root';
     private $password = '';
-    private $dbname = 'adv_guidance2';
+    private $dbname = 'adv_guidance';
 
     protected $connection; // This property will hold the PDO connection object once connected.
 

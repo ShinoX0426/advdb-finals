@@ -18,19 +18,22 @@ $parentId = $_SESSION['account']['user_id'];
 $parentName = $_SESSION['account']['first_name'] . ' ' . $_SESSION['account']['last_name'];
 
 // Fetch children of the parent
-$children = $user->getStudents($parentId); // Assuming this method returns all students; you may need to modify it to return only children of the current parent
+$children = $user->getStudents($parentId);
 $childrenCount = count($children);
 
 // Fetch upcoming meetings
-$upcomingMeetings = $appointment->getByStudent($parentId); // This assumes the parent ID is used; you might need to adjust this to fetch appointments for all children
+$upcomingMeetings = $appointment->getByStudent($parentId);
 $upcomingMeetingsCount = count($upcomingMeetings);
 
 // Fetch open cases
-$openCases = $case->getByStudent($parentId); // Again, this assumes using parent ID; adjust as necessary
+$openCases = $case->getByStudent($parentId);
 $openCasesCount = count($openCases);
 
+// Fetch all appointments
+$allAppointments = $appointment->getAll();
+
 // Prepare data for display
-$recentMeetings = array_slice($upcomingMeetings, 0, 5); // Get the 5 most recent meetings
+$recentMeetings = array_slice($upcomingMeetings, 0, 5);
 
 ?>
 
@@ -225,7 +228,7 @@ $recentMeetings = array_slice($upcomingMeetings, 0, 5); // Get the 5 most recent
             <ul>
                 <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="children.php"><i class="fas fa-users"></i> Your Children/Ward</a></li>
-                <li><a href="set_meeting.php"><i class="fas fa-calendar-plus"></i> Set a Meeting</a></li>
+                <li><a href="set_appointment.php"><i class="fas fa-calendar-plus"></i> Set a Meeting</a></li>
                 <li><a href="case_history.php"><i class="fas fa-history"></i> Case History</a></li>
                 <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
             </ul>
@@ -279,6 +282,56 @@ $recentMeetings = array_slice($upcomingMeetings, 0, 5); // Get the 5 most recent
                         <?php endif; ?>
                     </tbody>
                 </table>
+
+            <br>
+            <br>
+
+            <div class="all-appointments">
+            <h3>All Appointments History</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Counselor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($allAppointments)) : ?>
+                        <?php foreach ($allAppointments as $appointment) : ?>
+                            <?php
+                            // Only show appointments for this parent's children
+                            if ($appointment['parent_id'] == $parentId) :
+                            ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($appointment['student_first_name'] . ' ' . $appointment['student_last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($appointment['counselor_first_name'] . ' ' . $appointment['counselor_last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($appointment['request_date']))); ?></td>
+                                    <td><?php echo htmlspecialchars(date('H:i', strtotime($appointment['request_date']))); ?></td>
+                                    <td><?php echo htmlspecialchars($appointment['reason']); ?></td>
+                                    <td>
+                                        <span class="status-badge status-<?php echo strtolower($appointment['status']); ?>">
+                                            <?php echo ucfirst(htmlspecialchars($appointment['status'])); ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($appointment['date_created']))); ?></td>
+                                    <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($appointment['last_updated']))); ?></td>
+                                </tr>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php else : ?>
+                        <tr>
+                            <td colspan="8">No appointments found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
             </div>
         </div>
     </div>

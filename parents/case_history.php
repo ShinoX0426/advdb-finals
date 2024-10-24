@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../user.class.php';
+require_once '../cases.class.php';
 
 // Check if user is logged in and is a parent
 if (!isset($_SESSION['account']) || $_SESSION['account']['user_type'] !== 'parent') {
@@ -9,12 +10,27 @@ if (!isset($_SESSION['account']) || $_SESSION['account']['user_type'] !== 'paren
 }
 
 $user = new User();
+$cases = new Cases();
+
 $parentId = $_SESSION['account']['user_id'];
 $parentName = $_SESSION['account']['first_name'] . ' ' . $_SESSION['account']['last_name'];
 
-// Fetch children/wards connected to the parent
+// Get all children of the parent
 $children = $user->getStudents($parentId);
 
+// Get all cases
+$allCases = $cases->getAll();
+
+// Filter cases for parent's children
+$childrenCases = array_filter($allCases, function($case) use ($children) {
+    foreach ($children as $child) {
+        if ($case['student_first_name'] . ' ' . $case['student_last_name'] === 
+            $child['first_name'] . ' ' . $child['last_name']) {
+            return true;
+        }
+    }
+    return false;
+});
 
 ?>
 
@@ -23,11 +39,11 @@ $children = $user->getStudents($parentId);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Children/Ward - Don Pablo Guidance Counseling</title>
+    <title>Case History - Don Pablo Guidance Counseling</title>
     <link rel="shortcut icon" href="../images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        /* Copy the styles from the dashboard.php */
+        /* Include the existing styles from dashboard.php */
         * {
             margin: 0;
             padding: 0;
@@ -112,34 +128,19 @@ $children = $user->getStudents($parentId);
             padding: 20px;
         }
 
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .page-header {
             margin-bottom: 20px;
         }
 
-        .btn {
-            background-color: #fd9619;
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
+        .page-header h2 {
+            color: #0f3978;
         }
 
-        .children-list {
+        .cases-container {
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
-        }
-
-        .children-list h3 {
-            margin-top: 0;
-            color: #0f3978;
-            margin-bottom: 15px;
         }
 
         table {
@@ -149,17 +150,53 @@ $children = $user->getStudents($parentId);
 
         th, td {
             text-align: left;
-            padding: 10px;
+            padding: 12px;
             border-bottom: 1px solid #ddd;
         }
 
         th {
             background-color: #f2f2f2;
+            color: #0f3978;
         }
 
-        .btn-small {
-            padding: 0.25rem 0.5rem;
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-open {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-closed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .case-description {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .view-details {
+            color: #0f3978;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .view-details:hover {
+            text-decoration: underline;
+        }
+
+        .no-cases {
+            text-align: center;
+            padding: 20px;
+            color: #666;
         }
     </style>
 </head>
@@ -187,38 +224,53 @@ $children = $user->getStudents($parentId);
                 <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
             </ul>
         </div>
+
         <div class="main-content">
-            <div class="dashboard-header">
-                <h2>Your Children/Ward</h2>
+            <div class="page-header">
+                <h2>Case History</h2>
+                <p>View all cases and their status for your children</p>
             </div>
-            <div class="children-list">
-                <h3>Children/Wards</h3>
-                <?php if (!empty($children)) : ?>
+
+            <div class="cases-container">
+                <?php if (!empty($childrenCases)) : ?>
                     <table>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Date of Birth</th>
-                                <th>Contact Number</th>
-                                <th>Actions</th>
+                                <th>Case ID</th>
+                                <th>Student</th>
+                                <th>Counselor</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($children as $child) : ?>
+                            <?php foreach ($childrenCases as $case) : ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($child['first_name'] . ' ' . $child['middle_name'] . ' ' . $child['last_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($child['date_of_birth']); ?></td>
-                                    <td><?php echo htmlspecialchars($child['contact_num']); ?></td>
+                                    <td>#<?php echo htmlspecialchars($case['case_id']); ?></td>
+                                    <td><?php echo htmlspecialchars($case['student_first_name'] . ' ' . $case['student_last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($case['counselor_first_name'] . ' ' . $case['counselor_last_name']); ?></td>
+                                    <td class="case-description">
+                                        <?php echo htmlspecialchars($case['case_description']); ?>
+                                    </td>
                                     <td>
-                                        <a href="set_appointment.php?student_id=<?php echo $child['user_id']; ?>" class="btn btn-small">Set Meeting</a>
-                                        <a href="case_history.php?student_id=<?php echo $child['user_id']; ?>" class="btn btn-small">View Cases</a>
+                                        <span class="status-badge status-<?php echo strtolower($case['case_status']); ?>">
+                                            <?php echo ucfirst(htmlspecialchars($case['case_status'])); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="view_case.php?id=<?php echo $case['case_id']; ?>" class="view-details">
+                                            View Details
+                                        </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 <?php else : ?>
-                    <p>No children/wards are currently connected to your account.</p>
+                    <div class="no-cases">
+                        <p>No cases found for your children.</p>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
