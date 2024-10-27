@@ -234,6 +234,7 @@ if (isset($_GET['info'])) {
                                     <td>
                                         <a href="#" class="btn-small">Edit</a>
                                         <a href="delete_case.php?id=<?= $case['case_id'] ?>" class="btn-small">Delete</a>
+                                        <a href="caselog.php?case_id=<?= $case['case_id'] ?>" class="btn-small">View</a>
                                     </td>
                                 </tr>
                                 <?php

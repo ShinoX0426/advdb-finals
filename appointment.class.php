@@ -1,7 +1,4 @@
 <?php
-
-require_once 'database.php';
-
 class Appointment
 {
     public $request_id = null;
@@ -14,9 +11,7 @@ class Appointment
     public $date_created = null;
     public $last_updated = null;
 
-    // Valid status values based on enum
     private const VALID_STATUSES = ['pending', 'approved', 'rejected'];
-
     protected $db;
 
     function __construct()
@@ -67,7 +62,7 @@ class Appointment
                 foreach ($data as $key => $value) {
                     $this->$key = $value;
                 }
-                return true;
+                return $data; // Return the data array instead of true
             }
         }
         return false;

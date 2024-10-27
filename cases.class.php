@@ -82,6 +82,7 @@ class Cases
         // SQL query with JOIN to retrieve case and user details
         $sql = "SELECT 
                     cases.case_id,
+                    cases.counselor_id AS counselor_id,
                     student.first_name AS student_first_name,
                     student.last_name AS student_last_name,
                     counselor.first_name AS counselor_first_name,

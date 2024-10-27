@@ -255,7 +255,7 @@ $recentCases = $case->getRecentCases();
                                     </td>
                                     <td><?= htmlspecialchars($case['case_description']) ?></td>
                                     <td><?= htmlspecialchars($case['created_at']) ?></td>
-                                    <td><a href="#" class="btn btn-small">View</a></td>
+                                    <td><a href="caselog.php?case_id=<?= $case['case_id'] ?>" class="btn btn-small">View</a></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
