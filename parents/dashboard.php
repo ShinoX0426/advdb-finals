@@ -11,7 +11,7 @@ if (!isset($_SESSION['account']) || $_SESSION['account']['user_type'] !== 'paren
 }
 
 $user = new User();
-$appointment = new Appointment();`
+$appointment = new Appointment();
 $case = new Cases();
 
 $parentId = $_SESSION['account']['user_id'];
