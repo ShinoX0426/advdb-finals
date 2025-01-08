@@ -31,6 +31,12 @@ if($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['info']) && $_GET == "edit
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['enable-id'])) {
+    $user->enable($_GET['enable-id']);
+    header('location: students.php?info=success');
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 
     $firstName = $user->clean_input($_POST['firstName']);

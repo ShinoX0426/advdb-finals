@@ -158,6 +158,16 @@ class User
         return $query->execute();
     }
 
+    // Enable user
+    function enable($id)
+    {
+        $sql = "UPDATE Users SET is_disabled = 0 WHERE user_id = :id;";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':id', $id);
+
+        return $query->execute();
+    }
+
     // Check if username exists (excluding a specific ID for update operations)
     function usernameExist($username, $excludeID = null)
     {
