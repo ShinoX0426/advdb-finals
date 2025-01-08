@@ -1,3 +1,28 @@
+<?php
+
+require_once '../user.class.php';
+require_once '../cases.class.php';
+
+session_start();
+
+if (!isset($_SESSION['account']['user_type']) || $_SESSION['account']['user_type'] !== 'teacher') {
+    header('Location: ../index.php');
+    exit();
+}
+
+$user = new User();
+$case = new Cases();
+
+$students = $user->getStudents();
+$totalStudents = count($students);
+$newRegistrations = $user->getNewRegistrations(); // Assuming you have a method to get new registrations
+$studentsWithCases = $case->getStudentsWithCases(); // Assuming you have a method to get students with cases
+
+
+$teacher = $user->fetch($_SESSION['account']['user_id']);
+$teacherName = $teacher['first_name'] . ' ' . $teacher['last_name'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,173 +31,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard - Don Pablo Lorenzo Memorial High School</title>
     <link rel="stylesheet" href="teacher-dashboard.css">
+    <style>
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 5rem;
+            height: auto;
+            margin-right: 10px;
+        }
+    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    <header>
-        <div class="container">
-            <div class="teacher-profile">
-                <img src="../images/teacher1.jpeg" alt="Teacher Photo" class="teacher-photo">
-                <div class="teacher-info">
-                    <h1>Ms. Jane Smith</h1>
-                    <p>Mathematics Teacher</p>
-                </div>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#dashboard">Dashboard</a></li>
-                    <li><a href="#class-list">Class List</a></li>
-                    <li><a href="#activities">Activities</a></li>
-                    <li><a href="#reports">Reports</a></li>
-                </ul>
-            </nav>
-            <div class="user-actions">
-                <a href="#" class="notifications"><i class="fas fa-bell"></i></a>
-                <a href="../logout.php" class="logout-btn" onclick="confirm('Press a button!');">Logout</a>
+    
+<?= include 'navbar-include.php' ?>
+
+<main>
+    <section id="hero-section">
+        <div class="teacher-profile">
+            <div class="teacher-info">
+                <h1><?= $teacherName ?></h1>
+                <p>Mathematics Teacher</p>
             </div>
         </div>
-    </header>
-
-    <main>
-        <section id="dashboard" class="dashboard">
-            <h2>Dashboard</h2>
-            <div class="dashboard-cards">
-                <div class="card">
-                    <h3>Total Students</h3>
-                    <p>150</p>
-                </div>
-                <div class="card">
-                    <h3>Average Attendance</h3>
-                    <p>95%</p>
-                </div>
-                <div class="card">
-                    <h3>Upcoming Events</h3>
-                    <p>3</p>
-                </div>
+        <div class="dashboard-cards">
+            <div class="card">
+                <h3>Managed Students</h3>
+                <p><?= $totalStudents ?></p>
             </div>
-        </section>
-
-        <section id="class-list" class="class-list">
-            <h2>Class List</h2>
-            <div class="class-actions">
-                <button id="addStudentBtn" class="btn">Add Student</button>
-                <input type="text" id="searchStudent" placeholder="Search student...">
+            <div class="card">
+                <h3>Students with Cases</h3>
+                <p><?= count($studentsWithCases) ?></p>
             </div>
+            <div class="card">
+                <h3>New Registrations</h3>
+                <p><?= count($newRegistrations) ?></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="recent-cases">
+        <div class="container">
+            <h2>Recent Cases</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>Case ID</th>
+                        <th>Student Name</th>
+                        <th>Case Description</th>
+                        <th>Date Reported</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Example row, you should fetch and display real data from your database -->
+                    <tr>
+                        <td>1</td>
+                        <td>John Doe</td>
+                        <td>Bullying</td>
+                        <td>2023-10-01</td>
+                        <td>Open</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jane Roe</td>
+                        <td>Cheating</td>
+                        <td>2023-10-02</td>
+                        <td>Closed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="students">
+        <div class="container">
+            <h2>Students</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
                         <th>Name</th>
                         <th>Grade</th>
-                        <th>Performance</th>
-                        <th>Attendance</th>
+                        <th>Section</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Example row, you should fetch and display real data from your database -->
                     <tr>
-
+                        <td>1001</td>
+                        <td>John Doe</td>
+                        <td>10</td>
+                        <td>A</td>
+                        <td><a href="#">View Profile</a></td>
                     </tr>
-                    <!-- More student rows here -->
+                    <tr>
+                        <td>1002</td>
+                        <td>Jane Roe</td>
+                        <td>10</td>
+                        <td>B</td>
+                        <td><a href="#">View Profile</a></td>
+                    </tr>
                 </tbody>
             </table>
-        </section>
-
-        <section id="student-profile" class="student-profile hidden">
-            <h2>Student Profile</h2>
-            <div class="profile-content">
-                <div class="profile-image">
-                    <img src="images/student-placeholder.jpg" alt="Student Photo">
-                </div>
-                <div class="profile-details">
-                    <h3>John Doe</h3>
-                    <p><strong>ID:</strong> 001</p>
-                    <p><strong>Grade:</strong> 10</p>
-                    <p><strong>Performance:</strong> Excellent</p>
-                    <p><strong>Progress:</strong> Above Average</p>
-                    <p><strong>Attendance:</strong> 98%</p>
-                </div>
-            </div>
-            <div class="violation-section hidden">
-                <h3>Violations/Penalties</h3>
-                <ul>
-                    <li>No violations recorded</li>
-                </ul>
-            </div>
-        </section>
-
-        <section id="activities" class="activities">
-            <h2>Course Activities</h2>
-            <div class="activities-actions">
-                <button id="addActivityBtn" class="btn">Add New Activity</button>
-                <input type="text" id="courseTitle" placeholder="Enter course title" class="course-title-input">
-            </div>
-
-            <div class="activities-list">
-                <!-- Activities will be dynamically populated here -->
-            </div>
-
-            <!-- Add Activity Modal -->
-            <div id="addActivityModal" class="modal">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <h2>Add New Activity</h2>
-                    <form id="addActivityForm">
-                        <select name="type" required>
-                            <option value="">Select Activity Type</option>
-                            <option value="homework">Homework</option>
-                            <option value="quiz">Quiz</option>
-                            <option value="project">Project</option>
-                        </select>
-                        <input type="text" name="description" placeholder="Activity Description" required>
-                        <input type="date" name="dueDate" required>
-                        <button type="submit" class="btn">Add Activity</button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <section id="reports" class="reports">
-            <h2>Reports</h2>
-            <form id="violationReportForm">
-                <h3>Report Violation</h3>
-                <select name="student" required>
-                    <option value="">Select Student</option>
-                    <option value="1">John Doe</option>
-                    <!-- More student options -->
-                </select>
-                <input type="text" name="violation" placeholder="Violation description" required>
-                <textarea name="details" placeholder="Additional details"></textarea>
-                <button type="submit" class="btn">Submit Report</button>
-            </form>
-        </section>
-
-
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2023 Don Pablo Lorenzo Memorial High School. All rights reserved.</p>
         </div>
-    </footer>
-
-    <div id="addStudentModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Add New Student</h2>
-            <form id="addStudentForm">
-                <input type="text" name="name" placeholder="Student Name" required>
-                <input type="number" name="grade" placeholder="Grade" required>
-                <input type="file" name="photo" accept="image/*">
-                <button type="submit" class="btn">Add Student</button>
-            </form>
-        </div>
-    </div>
-
-
-
-    <script src="teacher-dashboard.js"></script>
+    </section>
+</main>
 </body>
 
 </html>

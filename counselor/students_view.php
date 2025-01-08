@@ -1,9 +1,14 @@
 <?php
 require_once '../user.class.php';
+require_once '../cases.class.php'; // Include the Cases class
 
 $user = new User();
+$case = new Cases(); // Assuming you have a Cases class
 
 $students = $user->getStudents();
+$totalStudents = count($students);
+$newRegistrations = $user->getNewRegistrations(); // Assuming you have a method to get new registrations
+$studentsWithCases = $case->getStudentsWithCases(); // Assuming you have a method to get students with cases
 
 // var_dump($students);
 
@@ -21,6 +26,44 @@ if (isset($_GET['info'])) {
         }
     </script>
     <?php
+}
+
+$parents = [];
+$parents = $user->getParent();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
+
+    $firstName = $user->clean_input($_POST['firstName']);
+    $middleName = $user->clean_input($_POST['middleName']);
+    $lastName = $user->clean_input($_POST['lastName']);
+    $username = $user->clean_input($_POST['username']);
+    $email = $user->clean_input($_POST['email']);
+    $password = $user->clean_input($_POST['password']);
+    $confirmPassword = $user->clean_input($_POST['confirmPassword']);
+    $userType = $user->clean_input("student");
+    $dob = $user->clean_input($_POST['dob']);
+    $contact = $user->clean_input($_POST['contact']);
+    $parentId = $user->clean_input($_POST['parentId']);
+
+    $result = $user->register(
+        $firstName, 
+        $middleName, 
+        $lastName, 
+        $email,
+        $username, 
+        $password, 
+        $confirmPassword, 
+        $userType, 
+        $dob, 
+        $contact, 
+        $parentId);
+
+    if ($result === 'Success') {
+        echo "<script>document.getElementById('success-message').textContent = 'Account created successfully!';</script>";
+        header('location: students_view.php?info=Account created successfully!');
+    } else {
+        echo "<script>document.getElementById('error-message').textContent = '$result';</script>";
+    }
 }
 
 ?>
@@ -173,11 +216,38 @@ if (isset($_GET['info'])) {
             border-radius: 5px;
         }
 
+        .form-row select {
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-row select option {
+            padding: 8px;
+        }
+
+        .form-row select option:hover {
+            background-color: #f0f0f0;
+        }
+
         .students-table {
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
+        }
+
+        .students-table h2{
+            margin-bottom: 1rem;
+            color: #0f3978;
+        }
+
+        .disabled-row {
+        background-color: #ccc; /* You can change this color as needed */
         }
 
         table {
@@ -197,8 +267,10 @@ if (isset($_GET['info'])) {
         }
 
         .btn-small {
-            padding: 0.25rem 0.5rem;
+            padding: 0.25rem;
+            margin: 0.5rem;
             font-size: 0.875rem;
+
             background-color: orange;
             color: white;
             border-radius: 10px;
@@ -213,6 +285,50 @@ if (isset($_GET['info'])) {
         a {
             text-decoration: none;
         }
+
+        .register-container {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .register-container input,
+        .register-container select {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .register-container h2 {
+            margin-bottom: 0.25rem;
+            color: #0f3978;
+        }
+
+        /* Form styling */
+        #addAccountForm {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Rows for multiple inputs */
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .form-row input[type="text"],
+        .form-row input[type="email"],
+        .form-row input[type="password"],
+        .form-row input[type="date"],
+        .form-row select {
+            flex: 1;
+        }
     </style>
 </head>
 
@@ -225,7 +341,7 @@ if (isset($_GET['info'])) {
             </div>
             <div class="user-info">
                 <span>Welcome, Counselor</span>
-                <a href="#" class="logout-btn">Logout</a>
+                <a href="../logout.php" class="logout-btn">Logout</a>
             </div>
         </nav>
     </header>
@@ -237,43 +353,107 @@ if (isset($_GET['info'])) {
                 <li><a href="appointments_view.php"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
                 <li><a href="cases_view.php"><i class="fas fa-file-alt"></i> Cases</a></li>
                 <li><a href="reports_view.php"><i class="fas fa-chart-bar"></i> Reports</a></li>
-                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="account.php"><i class="fa fa-user"></i> Account</a></li>
             </ul>
         </div>
         <div class="main-content">
             <div class="dashboard-header">
                 <h2>Students Overview</h2>
-                <a href="add_student.php" class="btn">Add Student</a>
             </div>
             <div class="dashboard-cards">
                 <div class="card">
                     <h3>Total Students</h3>
-                    <p>500</p>
+                    <p><?= $totalStudents ?></p>
                 </div>
                 <div class="card">
-                    <h3>Graduating Students</h3>
-                    <p>100</p>
+                    <h3>Students with Cases</h3>
+                    <p><?= count($studentsWithCases) ?></p>
                 </div>
                 <div class="card">
                     <h3>New Registrations</h3>
-                    <p>30</p>
+                    <p><?= count($newRegistrations) ?></p>
                 </div>
             </div>
+            <div class="register-container">
+                <h2>Add Student</h2>
+                <form id="addAccountForm" method="POST" action="">
+                    <div class="error" id="error-message"></div>
+                    <div class="success" id="success-message"></div>
+
+                    <!-- Row 1: firstName, middleName, lastName -->
+                    <div class="form-row">
+                        <input type="text" name="firstName" placeholder="First Name" required>
+                        <input type="text" name="middleName" placeholder="Middle Name">
+                        <input type="text" name="lastName" placeholder="Last Name" required>
+                    </div>
+
+                    <!-- Row 2: username, email -->
+                    <div class="form-row">
+                        <input type="text" name="username" placeholder="Username" required>
+                        <input type="email" name="email" placeholder="Email" required>
+                    </div>
+
+                    <!-- Row 3: password, confirmPassword -->
+                    <div class="form-row">
+                        <input type="password" name="password" placeholder="Password" required>
+                        <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+                    </div>
+
+                    <!-- Single row for userType, dob, contact -->
+                    <div class="form-row">
+                        <input type="date" name="dob" placeholder="Date of Birth" required>
+                        <input type="text" name="contact" placeholder="Contact Number" required>
+                    </div>
+
+                    <!-- Parent dropdown -->
+                    <div class="form-row">
+                        <input type="text" id="searchParent" placeholder="Search by Name or Parent ID">
+                        <select name="parentId" required>
+                            <option value="">Select Parent</option>
+                            <?php foreach ($parents as $p): ?>
+                                <option value="<?= $p['user_id'] ?>">
+                                    <?= htmlspecialchars($p['first_name'] . ' ' . $p['last_name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <?php if(isset($result)): ?>
+                        <p style="color: red; margin-bottom: 10px; margin-top: 10px;">
+                            <?= $result ?>
+                            <br>
+                            <br>
+                        </p>
+                    <?php endif; ?>
+
+                    <button class="btn-small" style="max-width:10%;" type="submit" name="register">Register</button>
+                </form>
+            </div>
             <div class="students-table">
+                <h2>Students</h2>
                 <div class="filters">
                     <input type="text" placeholder="Search by name..." id="search-bar">
-                    <select id="filter-grade">
-                        <option value="">Filter by Grade</option>
-                        <option value="9">Grade 9</option>
-                        <option value="10">Grade 10</option>
-                        <option value="11">Grade 11</option>
-                        <option value="12">Grade 12</option>
-                    </select>
-                    <select id="filter-status">
-                        <option value="">Filter by Status</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
+                    <script>
+                    document.getElementById('search-bar').addEventListener('keyup', function() {
+                        let searchText = this.value.toLowerCase();
+                        let tableRows = document.querySelector('table tbody').getElementsByTagName('tr');
+                        
+                        for (let row of tableRows) {
+                            let cells = row.getElementsByTagName('td');
+                            let found = false;
+                            
+                            for (let cell of cells) {
+                                if (cell.textContent.toLowerCase().includes(searchText)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            
+                            row.style.display = found ? '' : 'none';
+                        }
+                    });
+                    </script>
+
                 </div>
                 <table>
                     <thead>
@@ -290,7 +470,7 @@ if (isset($_GET['info'])) {
                     </thead>
                     <tbody>
                         <?php foreach ($students as $student): ?>
-                            <tr>
+                            <tr class="<?= $student['is_disabled'] ? 'disabled-row' : '' ?>">
                                 <td><?= htmlspecialchars($student['user_id']) ?></td>
                                 <td><?= htmlspecialchars($student['first_name']) ?></td>
                                 <td><?= htmlspecialchars($student['middle_name']) ?></td>
@@ -300,10 +480,8 @@ if (isset($_GET['info'])) {
                                 </td>
                                 <td><?= htmlspecialchars($student['contact_num']) ?></td>
                                 <td>
-                                    <a href="#" class="btn-small">Change Password</a>
-                                    <a href="edit_students.php?id=<?= $student['user_id'] ?>" class="btn-small">Edit
-                                        Account</a>
-                                    <a href="delete.php?id=<?= $student['user_id'] ?>" class="btn-small">Delete Account</a>
+                                    <a href="edit_students.php?id=<?= $student['user_id'] ?>" class="btn-small">Update</a>
+                                    <a href="delete.php?id=<?= $student['user_id'] ?>" class="btn-small">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -312,6 +490,56 @@ if (isset($_GET['info'])) {
             </div>
         </div>
     </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchParent');
+    const parentSelect = document.querySelector('select[name="parentId"]');
+    const originalOptions = Array.from(parentSelect.options);
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        // Clear current options except the first "Select Parent" option
+        while (parentSelect.options.length > 1) {
+            parentSelect.remove(1);
+        }
+
+        // Filter and add matching options
+        originalOptions.forEach((option, index) => {
+            if (index === 0) return; // Skip the "Select Parent" option
+            
+            // Check if search term matches either the option value (ID) or text (name)
+            const matchesId = option.value.toLowerCase().includes(searchTerm);
+            const matchesName = option.text.toLowerCase().includes(searchTerm);
+            
+            if (matchesId || matchesName) {
+                parentSelect.add(option.cloneNode(true));
+            }
+        });
+
+        // If no matches found, you might want to show a message
+        if (parentSelect.options.length === 1 && searchTerm !== '') {
+            const noMatchOption = new Option('No matches found', '', false, false);
+            noMatchOption.disabled = true;
+            parentSelect.add(noMatchOption);
+        }
+    });
+
+    // Optional: Clear search when a parent is selected
+    // parentSelect.addEventListener('change', function() {
+    //     searchInput.value = '';
+    //     // Restore all options
+    //     while (parentSelect.options.length > 1) {
+    //         parentSelect.remove(1);
+    //     }
+    //     originalOptions.forEach((option, index) => {
+    //         if (index === 0) return;
+    //         parentSelect.add(option.cloneNode(true));
+    //     });
+    // });
+});
+</script>
 </body>
 
 </html>

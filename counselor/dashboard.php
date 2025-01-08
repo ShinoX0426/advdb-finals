@@ -212,7 +212,7 @@ $recentCases = $case->getRecentCases();
                 <li><a href="appointment_view.php"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
                 <li><a href="cases_view.php"><i class="fas fa-file-alt"></i> Cases</a></li>
                 <li><a href="report_view.php"><i class="fas fa-chart-bar"></i> Reports</a></li>
-                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="account.php"><i class="fa fa-user"></i> Account</a></li>
             </ul>
         </div>
         <div class="main-content">

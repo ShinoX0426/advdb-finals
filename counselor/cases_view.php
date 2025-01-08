@@ -190,16 +190,16 @@ if (isset($_GET['info'])) {
         </nav>
     </header>
     <div class="dashboard-container">
-        <div class="sidebar">
-            <ul>
-                <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="students_view.php"><i class="fas fa-users"></i> Students</a></li>
-                <li><a href="appointments_view.php"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
-                <li><a href="cases_view.php"><i class="fas fa-file-alt"></i> Cases</a></li>
-                <li><a href="reports_view.php"><i class="fas fa-chart-bar"></i> Reports</a></li>
-                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
-            </ul>
-        </div>
+    <div class="sidebar">
+        <ul>
+            <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="students_view.php"><i class="fas fa-users"></i> Students</a></li>
+            <li><a href="appointments_view.php"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+            <li><a href="cases_view.php"><i class="fas fa-file-alt"></i> Cases</a></li>
+            <li><a href="reports_view.php"><i class="fas fa-chart-bar"></i> Reports</a></li>
+            <li><a href="account.php"><i class="fa fa-user"></i> Account</a></li>
+        </ul>
+    </div>
         <div class="main-content">
             <div class="dashboard-header">
                 <h2>Cases Overview</h2>

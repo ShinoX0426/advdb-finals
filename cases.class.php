@@ -160,5 +160,39 @@ class Cases
     {
         return htmlspecialchars(strip_tags(trim($data)));
     }
+
+    public function getStudentsWithCases()
+    {
+        $sql = "SELECT DISTINCT 
+                    u.user_id,
+                    u.first_name,
+                    u.last_name,
+                    COUNT(c.case_id) as case_count
+                FROM users u
+                INNER JOIN cases c ON u.user_id = c.student_id
+                WHERE u.user_type = 'student'
+                GROUP BY u.user_id, u.first_name, u.last_name
+                ORDER BY u.last_name, u.first_name";
+
+        $stmt = $this->db->connect()->prepare($sql);
+        
+        if ($stmt->execute()) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        
+        return [];
+    }
+
+    public function getActiveCasesByStudentId($student_id)
+    {
+        $sql = "SELECT * FROM cases WHERE student_id = :student_id AND case_status = 'open'";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':student_id', $student_id);
+
+        if ($query->execute()) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
 }
 ?>

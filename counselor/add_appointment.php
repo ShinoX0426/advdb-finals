@@ -204,12 +204,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form action="" method="POST">
             <!-- Student Name Dropdown -->
             <label for="student_id">Select Student</label>
-            <select id="student_id" name="student_id" required>
-                <option value="">Select Student</option>
+            <input type="text" id="searchStudent" placeholder="Search by Name or Student ID" onkeyup="filterStudents()">
+            <select name="student_id" id="student_id" required>
+                <option value="">Select a student</option>
                 <?php foreach ($students as $student): ?>
-                    <option value="<?= htmlspecialchars($student['user_id']) ?>">
-                        <?= htmlspecialchars($student['first_name'] . ' ' . $student['last_name']) ?>
-                    </option>
+                    <option value="<?= $student['user_id'] ?>"><?= $student['first_name'] . ' ' . $student['last_name'] ?></option>
                 <?php endforeach; ?>
             </select>
 
@@ -238,6 +237,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="appointments_view.php">Back to Student List</a>
         </div>
     </div>
+
+    <script>
+function filterStudents() {
+    let input = document.getElementById('searchStudent');
+    let filter = input.value.toLowerCase();
+    let select = document.getElementById('student_id');
+    let options = select.getElementsByTagName('option');
+    let matchFound = false;
+
+    // Add "No matches" option if it doesn't exist
+    let noMatch = select.querySelector('.no-matches');
+    if (!noMatch) {
+        noMatch = document.createElement('option');
+        noMatch.textContent = 'No matches found';
+        noMatch.className = 'no-matches';
+        noMatch.disabled = true;
+        select.appendChild(noMatch);
+    }
+
+    // Filter options
+    for (let i = 0; i < options.length; i++) {
+        if (options[i].className === 'no-matches') continue;
+        
+        let text = options[i].text.toLowerCase();
+        if (text.indexOf(filter) > -1) {
+            options[i].style.display = '';
+            matchFound = true;
+        } else {
+            options[i].style.display = 'none';
+        }
+    }
+
+    // Show/hide "No matches" option
+    noMatch.style.display = matchFound ? 'none' : '';
+    
+    // Clear "No matches" when search is empty
+    if (filter === '') {
+        noMatch.style.display = 'none';
+    }
+}
+</script>
 </body>
 
 </html>

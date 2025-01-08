@@ -46,6 +46,8 @@ class User
 
             $result = $query->execute();
 
+
+
             if ($result) {
                 return [
                     'success' => true,
@@ -97,37 +99,59 @@ class User
     }
 
     // Update user
-    function update($id)
+    public function update($id)
     {
-        $sql = "UPDATE Users SET 
-                first_name = :first_name, 
-                middle_name = :middle_name, 
-                last_name = :last_name, 
-                email = :email, 
-                username = :username,
-                user_type = :user_type,
-                date_of_birth = :date_of_birth,
-                contact_num = :contact_num
-                WHERE user_id = :id;";
-        $query = $this->db->connect()->prepare($sql);
+        try {
+            $sql = "UPDATE Users SET 
+                    first_name = :first_name, 
+                    middle_name = :middle_name, 
+                    last_name = :last_name, 
+                    email = :email, 
+                    username = :username,
+                    user_type = :user_type,
+                    date_of_birth = :date_of_birth,
+                    contact_num = :contact_num
+                    WHERE user_id = :id;";
+            $query = $this->db->connect()->prepare($sql);
+    
+            $query->bindParam(':first_name', $this->first_name);
+            $query->bindParam(':middle_name', $this->middle_name);
+            $query->bindParam(':last_name', $this->last_name);
+            $query->bindParam(':email', $this->email);
+            $query->bindParam(':username', $this->username);
+            $query->bindParam(':user_type', $this->user_type);
+            $query->bindParam(':date_of_birth', $this->date_of_birth);
+            $query->bindParam(':contact_num', $this->contact_num);
+            $query->bindParam(':id', $id, PDO::PARAM_INT);
+    
+            if ($query->execute()) {
+                if ($query->rowCount() > 0) {
+                    return true; // Update successful
+                } else {
+                    return "No changes were made."; // No rows affected
+                }
+            } else {
+                $error = $query->errorInfo();
+                return "Update failed: " . $error[2];
+            }
+        } catch (PDOException $e) {
+            return "PDO Exception: " . $e->getMessage();
+        }
+    }
 
-        $query->bindParam(':first_name', $this->first_name);
-        $query->bindParam(':middle_name', $this->middle_name);
-        $query->bindParam(':last_name', $this->last_name);
-        $query->bindParam(':email', $this->email);
-        $query->bindParam(':username', $this->username);
-        $query->bindParam(':user_type', $this->user_type);
-        $query->bindParam(':date_of_birth', $this->date_of_birth);
-        $query->bindParam(':contact_num', $this->contact_num);
+    // Delete user
+    function full_delete($id)
+    {
+        $sql = "DELETE FROM Users WHERE user_id = :id;";
+        $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':id', $id);
 
         return $query->execute();
     }
 
-    // Delete user
     function delete($id)
     {
-        $sql = "DELETE FROM Users WHERE user_id = :id;";
+        $sql = "UPDATE Users SET is_disabled = 1 WHERE user_id = :id;";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':id', $id);
 
@@ -207,7 +231,7 @@ class User
     }
 
     // Register new user
-    public function register($firstName, $middleName, $lastName, $username, $password, $confirmPassword, $userType, $dob, $contact)
+    public function register($firstName, $middleName, $lastName, $email, $username, $password, $confirmPassword, $userType, $dob, $contact, $parentId = null)
     {
         // Check if username exists
         if ($this->usernameExists($username)) {
@@ -228,12 +252,13 @@ class User
         try {
             $hashPassword = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $this->db->connect()->prepare("
-                INSERT INTO Users (first_name, middle_name, last_name, username, password, user_type, date_of_birth, contact_num) 
-                VALUES (:first_name, :middle_name, :last_name, :username, :password, :user_type, :date_of_birth, :contact_num)
+                INSERT INTO Users (first_name, middle_name, last_name, email, username, password, user_type, date_of_birth, contact_num) 
+                VALUES (:first_name, :middle_name, :last_name, :email, :username, :password, :user_type, :date_of_birth, :contact_num)
             ");
             $stmt->bindParam(':first_name', $firstName);
             $stmt->bindParam(':middle_name', $middleName);
             $stmt->bindParam(':last_name', $lastName);
+            $stmt->bindParam(':email', $email);
             $stmt->bindParam(':username', $username);
             $stmt->bindParam(':password', $hashPassword);
             $stmt->bindParam(':user_type', $userType);
@@ -241,11 +266,28 @@ class User
             $stmt->bindParam(':contact_num', $contact);
 
             if ($stmt->execute()) {
-                return ''; // No error, registration successful
+                $userId = $this->db->connect()->lastInsertId(); // Get the generated primary key
+                isset($parentId) && $this->linkStudentToParent($userId, $parentId); // Link student to parent if parentId is provided
+                return 'Success'; // No error, registration successful
             } else {
                 return 'Error registering user.';
             }
         } catch (PDOException $e) {
+            return 'Database error: ' . $e->getMessage();
+        }
+    }
+
+    private function linkStudentToParent($studentId, $parentId)
+    {
+        try{
+            $sql = "INSERT INTO parentstudent (parent_id, student_id) VALUES (:parentId, :studentId)";
+            $stmt = $this->db->connect()->prepare($sql);
+            $stmt->bindParam(':parentId', $parentId);
+            $stmt->bindParam(':studentId', $studentId);
+            $stmt->execute();
+
+            return 'Success';
+        }catch (PDOException $e){
             return 'Database error: ' . $e->getMessage();
         }
     }
@@ -287,13 +329,13 @@ class User
         // Base SQL query to fetch student users
         $sql = "
             SELECT 
-                s.user_id, s.first_name, s.middle_name, s.last_name, s.date_of_birth, s.contact_num, 
+                s.user_id, s.first_name, s.middle_name, s.last_name, s.date_of_birth, s.contact_num, s.is_disabled,
                 p.first_name AS parent_first_name, p.last_name AS parent_last_name
             FROM 
                 users s
             LEFT JOIN 
                 parentstudent ps ON s.user_id = ps.student_id
-            LEFT JOIN 
+            LEFT JOIN   
                 users p ON ps.parent_id = p.user_id
         ";
 
@@ -303,6 +345,8 @@ class User
         } else {
             $sql .= " WHERE s.user_type = 'student'";
         }
+
+        $sql .= " ORDER BY s.last_updated DESC";
 
         $stmt = $this->db->connect()->prepare($sql);
 
@@ -378,6 +422,28 @@ class User
             error_log("Database Error: " . $e->getMessage());
             return false;
         }
+    }
+
+    public function getNewRegistrations($startDate = null, $endDate = null)
+    {
+        if ($startDate === null) {
+            $startDate = date('Y-m-d', strtotime('-1 year'));
+        }
+
+        if ($endDate === null) {
+            $endDate = date('Y-m-d');
+        }
+
+        $sql = "SELECT * FROM Users WHERE created_at BETWEEN :start_date AND :end_date";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':start_date', $startDate);
+        $query->bindParam(':end_date', $endDate);
+
+        if ($query->execute()) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return [];
     }
 }
 

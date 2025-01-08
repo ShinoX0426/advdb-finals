@@ -1,4 +1,7 @@
 <?php
+
+require_once 'database.php';
+
 class Appointment
 {
     public $request_id = null;

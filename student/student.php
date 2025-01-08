@@ -1,3 +1,18 @@
+<?php
+require_once '../user.class.php';
+require_once '../cases.class.php';
+
+// Initialize classes
+$user = new User();
+$case = new Cases();
+
+session_start();
+
+// Fetch active cases for the logged-in student
+$studentId = $_SESSION['account']['user_id']; // Assuming you have the student ID stored in the session
+$activeCases = $case->getActiveCasesByStudentId($studentId);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,209 +20,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f4f6;
-            display: flex;
-            height: 100vh;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #1e40af;
-            color: white;
-            padding: 20px;
-        }
-
-        .sidebar h1 {
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
-
-        .sidebar nav ul {
-            list-style-type: none;
-        }
-
-        .sidebar nav ul li {
-            margin-bottom: 15px;
-        }
-
-        .sidebar nav ul li a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .sidebar nav ul li a:before {
-            content: '•';
-            margin-right: 10px;
-        }
-
-        .main-content {
-            flex-grow: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        header h2 {
-            font-size: 28px;
-        }
-
-        .logout-btn {
-            background-color: #f97316;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-
-            text-decoration: none;
-        }
-
-        .dashboard-widgets {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .widget {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .widget h3 {
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-        .widget .value {
-            font-size: 36px;
-            font-weight: bold;
-        }
-
-        .widget .label {
-            color: #6b7280;
-        }
-
-        .attendance .value {
-            color: #16a34a;
-        }
-
-        .performance .value {
-            color: #2563eb;
-        }
-
-        .penalties .value {
-            color: #dc2626;
-        }
-
-        .recent-activity h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        th {
-            background-color: #f9fafb;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 12px;
-            color: #4b5563;
-        }
-    </style>
+    <link rel="stylesheet" href="student-styles.css">
 </head>
 
 <body>
-    <div class="sidebar">
-        <h1>Student Portal</h1>
-        <nav>
-            <ul>
-                <li><a href="profile.php">Profile</a></li>
-                <li><a href="student.php">Dashboard</a></li>
-                <li><a href="subject.php">Subjects</a></li>
-                <li><a href="attendance.php">Attendance</a></li>
-                <li><a href="#">Performance</a></li>
-                <li><a href="#">Penalties</a></li>
-            </ul>
-        </nav>
-    </div>
+
+<?php include 'sidebar.php'; ?>
+
     <div class="main-content">
-        <header>
-            <h2>Dashboard</h2>
-            <a href="../logout.php" class="logout-btn">Logout</a>
-        </header>
-        <div class="dashboard-widgets">
-            <div class="widget attendance">
-                <h3>Attendance Overview</h3>
-                <p class="value">95%</p>
-                <p class="label">Current month</p>
-            </div>
-            <div class="widget performance">
-                <h3>Performance Summary</h3>
-                <p class="value">90%</p>
-                <p class="label">Average grade</p>
-            </div>
-            <div class="widget penalties">
-                <h3>Active Penalties</h3>
-                <p class="value">1</p>
-                <p class="label">Requires attention</p>
-            </div>
-        </div>
-        <div class="recent-activity">
-            <h3>Recent Activity</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Subject</th>
-                        <th>Activity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>2023-10-15</td>
-                        <td>Mathematics</td>
-                        <td>Homework submitted</td>
-                    </tr>
-                    <tr>
-                        <td>2023-10-14</td>
-                        <td>Science</td>
-                        <td>Quiz completed</td>
-                    </tr>
-                    <!-- Add more rows as needed -->
-                </tbody>
-            </table>
+        <h2>Welcome, Student</h2>
+        <div class="case-section">
+            <h3>Active Case</h3>
+            <ul id="caseList">
+                <?php if (!empty($activeCases)): ?>
+                    <?php foreach ($activeCases as $case): ?>
+                        <li><?php echo htmlspecialchars($case['case_description']); ?></li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>No active cases available.</li>
+                <?php endif; ?>
+            </ul>
         </div>
     </div>
 </body>

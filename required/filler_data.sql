@@ -28,3 +28,15 @@ INSERT INTO users (user_id, first_name, middle_name, last_name, email, username,
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+INSERT INTO teacherreports (report_id, teacher_id, student_id, report_description, report_date) VALUES
+            (1, 101, 201, 'Student has shown significant improvement in mathematics.', '2023-10-01 10:00:00'),
+            (2, 102, 202, 'Student needs to work on their reading comprehension skills.', '2023-10-02 11:00:00'),
+            (3, 103, 203, 'Student is very active in class discussions.', '2023-10-03 12:00:00'),
+            (4, 104, 204, 'Student has been absent frequently.', '2023-10-04 13:00:00'),
+            (5, 105, 205, 'Student excels in sports activities.', '2023-10-05 14:00:00'),
+            (6, 106, 206, 'Student needs to improve their punctuality.', '2023-10-06 15:00:00'),
+            (7, 107, 207, 'Student is very creative and artistic.', '2023-10-07 16:00:00'),
+            (8, 108, 208, 'Student has difficulty in understanding science concepts.', '2023-10-08 17:00:00'),
+            (9, 109, 209, 'Student is very respectful and well-behaved.', '2023-10-09 18:00:00'),
+            (10, 110, 210, 'Student needs to participate more in group activities.', '2023-10-10 19:00:00');

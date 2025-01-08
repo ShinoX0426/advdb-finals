@@ -1,10 +1,13 @@
 <?php
 require_once '../cases.class.php'; // Include the Cases class
 require_once '../user.class.php'; // Include the User class
+require_once '../report.class.php'; // Include the User class
 
 // Initialize classes
 $case = new Cases(); // Assuming you have a Cases class
 $user = new User();
+$report = new Report();
+
 
 // Fetch students and counselors from the database
 $students = $user->getStudents();
@@ -12,6 +15,13 @@ $counselors = $user->getCounselors();
 
 $message = "";
 $result = false;
+
+// Check if report data is available
+if (isset($_GET['report_id'])) {
+    $report_id = $_GET['report_id'];
+    $report = new Report();
+    $reportCase = $report->fetch($report_id);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get form input values
@@ -42,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Case - Don Pablo Guidance Counseling</title>
     <link rel="shortcut icon" href="images/logo.png" type="image/x-icon">
+    <link rel=stylesheet href="form-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         * {
@@ -156,14 +167,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form action="" method="POST">
             <!-- Student Name Dropdown -->
             <label for="student_id">Select Student</label>
-            <select id="student_id" name="student_id" required>
-                <option value="">Select Student</option>
-                <?php foreach ($students as $student): ?>
-                    <option value="<?= htmlspecialchars($student['user_id']) ?>">
-                        <?= htmlspecialchars($student['first_name'] . ' ' . $student['last_name']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <?php if(isset($_GET['report_id'])): ?>
+                <input type="text" name="student_id" value="<?php echo $reportCase['student_id']; ?>" hidden readonly>
+                <input type="text" value="<?php echo $reportCase['student_first_name'] . ' ' . $reportCase['student_last_name']; ?>" readonly>
+            <?php else: ?>
+            <div class="form-row">
+                <input type="text" id="searchStudent" placeholder="Search by Name or Student ID" onkeyup="filterStudents()">
+                <select name="student_id" id="student_id" required>
+                    <option value="">Select a student</option>
+                    <?php foreach ($students as $student): ?>
+                        <option value="<?php echo $student['user_id']; ?>">
+                            <?php echo $student['first_name'] . ' ' . $student['last_name']; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <?php endif; ?>
 
             <!-- Counselor Dropdown -->
             <label for="counselor_id">Select Counselor</label>
@@ -178,7 +197,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Case Description -->
             <label for="case_description">Case Description</label>
-            <textarea id="case_description" name="case_description" rows="5" required></textarea>
+            <textarea id="case_description" name="case_description" rows="5" 
+            value = "<?= isset($case_description) ?>"
+            required></textarea>
 
             <!-- Case Status -->
             <label for="status">Case Status</label>
@@ -192,6 +213,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn">Submit Case</button>
         </form>
     </div>
+
+    <script>
+function filterStudents() {
+    let input = document.getElementById('searchStudent');
+    let filter = input.value.toLowerCase();
+    let select = document.getElementById('student_id');
+    let options = select.getElementsByTagName('option');
+    let matchFound = false;
+
+    // Add "No matches" option if it doesn't exist
+    let noMatch = select.querySelector('.no-matches');
+    if (!noMatch) {
+        noMatch = document.createElement('option');
+        noMatch.textContent = 'No matches found';
+        noMatch.className = 'no-matches';
+        noMatch.disabled = true;
+        select.appendChild(noMatch);
+    }
+
+    // Filter options
+    for (let i = 0; i < options.length; i++) {
+        if (options[i].className === 'no-matches') continue;
+        
+        let text = options[i].text.toLowerCase();
+        if (text.indexOf(filter) > -1) {
+            options[i].style.display = '';
+            matchFound = true;
+        } else {
+            options[i].style.display = 'none';
+        }
+    }
+
+    // Show/hide "No matches" option
+    noMatch.style.display = matchFound ? 'none' : '';
+    
+    // Clear "No matches" when search is empty
+    if (filter === '') {
+        noMatch.style.display = 'none';
+    }
+}
+</script>
 </body>
 
 </html>

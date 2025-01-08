@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($result) {
         echo "User updated successfully!";
-        header("Location: students_view.php");  // Redirect to list of students after success
+        // header("Location: students_view.php");  // Redirect to list of students after success
         exit;
     } else {
         echo "Failed to update user!";
