@@ -120,6 +120,12 @@ $caseLogs = $stmtLogs->fetchAll(PDO::FETCH_ASSOC);
             align-items: center;
         }
 
+        .sidebar ul li a i {
+            margin-right: 10px;
+            width: 20px; /* Ensure icons are aligned properly */
+            text-align: center; /* Center align icons */
+        }
+
         .main-content {
             flex-grow: 1;
             padding: 20px;
@@ -155,6 +161,24 @@ $caseLogs = $stmtLogs->fetchAll(PDO::FETCH_ASSOC);
             padding: 10px;
             border-radius: 5px;
         }
+
+        .breadcrumbs {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .breadcrumbs a {
+            color: #0f3978;
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -177,10 +201,21 @@ $caseLogs = $stmtLogs->fetchAll(PDO::FETCH_ASSOC);
                 <li><a href="children.php"><i class="fas fa-users"></i> Your Children/Ward</a></li>
                 <li><a href="set_appointment.php"><i class="fas fa-calendar-plus"></i> Set a Meeting</a></li>
                 <li><a href="case_history.php"><i class="fas fa-history"></i> Case History</a></li>
-                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="account.php"><i class="fas fa-user"></i> Account</a></li>
             </ul>
         </div>
         <div class="main-content">
+            <div class="page-header">
+                <h2>Case History</h2>
+                <p>View all cases and their status for your children</p>
+            </div>
+            <div class="breadcrumbs"><a href=""></a></div>
+            <div class="breadcrumbs">
+                <a href="dashboard.php">Dashboard</a> &gt; 
+                <a href="case_history.php">Case History</a> &gt; 
+                <span>View Case</span>
+            </div>
+
             <div class="case-info">
                 <h2>Case Details</h2>
                 <p><strong>Student:</strong> <?= htmlspecialchars($caseDetails['student_first_name'] . ' ' . $caseDetails['student_last_name']) ?></p>

@@ -11,7 +11,7 @@ if (!isset($_SESSION['account']) || $_SESSION['account']['user_type'] !== 'paren
 }
 
 $user = new User();
-$appointment = new Appointment();
+$appointment = new Appointment();`
 $case = new Cases();
 
 $parentId = $_SESSION['account']['user_id'];
@@ -230,7 +230,7 @@ $recentMeetings = array_slice($upcomingMeetings, 0, 5);
                 <li><a href="children.php"><i class="fas fa-users"></i> Your Children/Ward</a></li>
                 <li><a href="set_appointment.php"><i class="fas fa-calendar-plus"></i> Set a Meeting</a></li>
                 <li><a href="case_history.php"><i class="fas fa-history"></i> Case History</a></li>
-                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="account.php"><i class="fas fa-user"></i> Account</a></li>
             </ul>
         </div>
         <div class="main-content">
