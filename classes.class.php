@@ -132,4 +132,24 @@ class Classes
     {
         return htmlspecialchars(strip_tags(trim($data)));
     }
+
+    public function getClassesByStudent($student_id)
+    {
+        $sql = "SELECT 
+                    classes.*
+                FROM 
+                    classlist
+                JOIN 
+                    classes ON classlist.class_id = classes.class_id
+                WHERE 
+                    classlist.student_id = :student_id;";
+                    
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+
+        if ($query->execute()) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
 }

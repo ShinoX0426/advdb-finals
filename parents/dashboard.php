@@ -22,18 +22,29 @@ $children = $user->getStudents($parentId);
 $childrenCount = count($children);
 
 // Fetch upcoming meetings
-$upcomingMeetings = $appointment->getByStudent($parentId);
-$upcomingMeetingsCount = count($upcomingMeetings);
+$upcomingMeetingsCount = 0;
+$upcomingMeetings = [];
+
+foreach ($children as $child) {
+    $childMeetings = $appointment->getUpcomingAppointmentsByStudent($child['user_id']);
+    $upcomingMeetingsCount += count($childMeetings);
+    $upcomingMeetings = array_merge($upcomingMeetings, $childMeetings);
+}
 
 // Fetch open cases
-$openCases = $case->getByStudent($parentId);
-$openCasesCount = count($openCases);
+$openCasesCount = 0;
+foreach ($children as $child) {
+    $openCasesCount += $case->countOpenCasesByStudent($child['user_id']);
+}
 
 // Fetch all appointments
 $allAppointments = $appointment->getAll();
 
-// Prepare data for display
-$recentMeetings = array_slice($upcomingMeetings, 0, 5);
+$recentMeetings = [];
+
+foreach($children as $child) {
+    $recentMeetings = array_merge($recentMeetings, $appointment->getByStudent($child['user_id']));
+}
 
 ?>
 
@@ -43,7 +54,6 @@ $recentMeetings = array_slice($upcomingMeetings, 0, 5);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent Dashboard - Don Pablo Guidance Counseling</title>
     <title>Parent Dashboard - Don Pablo Guidance Counseling</title>
     <link rel="shortcut icon" href="../images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -265,13 +275,13 @@ $recentMeetings = array_slice($upcomingMeetings, 0, 5);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($recentMeetings)) : ?>
-                            <?php foreach ($recentMeetings as $meeting) : ?>
+                        <?php if (!empty($upcomingMeetings)) : ?>
+                            <?php foreach ($upcomingMeetings as $meeting) : ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($meeting['student_first_name'] . ' ' . $meeting['student_last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars(($meeting['student_first_name'] ?? 'N/A') . ' ' . ($meeting['student_last_name'] ?? 'N/A')); ?></td>
                                     <td><?php echo htmlspecialchars(date('Y-m-d', strtotime($meeting['request_date']))); ?></td>
                                     <td><?php echo htmlspecialchars(date('H:i', strtotime($meeting['request_date']))); ?></td>
-                                    <td><?php echo htmlspecialchars($meeting['counselor_first_name'] . ' ' . $meeting['counselor_last_name']); ?></td>
+                                    <td><?php echo htmlspecialchars(($meeting['counselor_first_name'] ?? 'N/A') . ' ' . ($meeting['counselor_last_name'] ?? 'N/A')); ?></td>
                                     <td><a href="#" class="btn btn-small">Reschedule</a></td>
                                 </tr>
                             <?php endforeach; ?>

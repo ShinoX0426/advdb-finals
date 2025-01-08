@@ -175,7 +175,16 @@ class Appointment
 
     public function getByStudent($student_id)
     {
-        $sql = "SELECT * FROM appointmentrequests WHERE student_id = :student_id";
+        $sql = "SELECT 
+                    a.*, 
+                    CONCAT(u_student.first_name, ' ', u_student.last_name) AS student_name, 
+                    CONCAT(u_counselor.first_name, ' ', u_counselor.last_name) AS counselor_name, 
+                    CONCAT(u_parent.first_name, ' ', u_parent.last_name) AS parent_name
+                FROM appointmentrequests a
+                LEFT JOIN users u_student ON a.student_id = u_student.user_id
+                LEFT JOIN users u_parent ON a.parent_id = u_parent.user_id
+                JOIN users u_counselor ON a.counselor_id = u_counselor.user_id
+                WHERE a.student_id = :student_id";
         $query = $this->db->connect()->prepare($sql);
         $query->bindParam(':student_id', $student_id);
         
@@ -204,5 +213,39 @@ class Appointment
     public function clean_input($data)
     {
         return htmlspecialchars(strip_tags(trim($data)));
+    }
+
+    public function getUpcomingAppointmentsByStudent($student_id)
+    {
+        $sql = "SELECT 
+                    a.*, 
+                    u_student.first_name AS student_first_name, 
+                    u_student.last_name AS student_last_name,
+                    u_counselor.first_name AS counselor_first_name, 
+                    u_counselor.last_name AS counselor_last_name
+                FROM appointmentrequests a
+                LEFT JOIN users u_student ON a.student_id = u_student.user_id
+                LEFT JOIN users u_counselor ON a.counselor_id = u_counselor.user_id
+                WHERE a.student_id = :student_id 
+                AND a.request_date >= CURRENT_DATE 
+                ORDER BY a.request_date ASC";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':student_id', $student_id);
+        
+        if ($query->execute()) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
+    public function countUpcomingAppointmentsByStudent($student_id)
+    {
+        $sql = "SELECT COUNT(*) FROM appointmentrequests 
+                WHERE student_id = :student_id 
+                AND request_date >= CURRENT_DATE";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':student_id', $student_id);
+        $query->execute();
+        return $query->fetchColumn();
     }
 }

@@ -142,6 +142,30 @@ class Cases
         return [];
     }
 
+    public function studentByParentID($parentID)
+    {
+        $sql = "SELECT * FROM cases WHERE student_id = :student_id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':student_id', $parentID);
+
+        if ($query->execute()) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
+    public function countOpenCasesByStudent($student_id)
+    {
+        $sql = "SELECT COUNT(*) as open_cases_count FROM cases WHERE case_status LIKE 'open' AND student_id = :student_id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+
+        if ($query->execute()) {
+            return $query->fetch(PDO::FETCH_ASSOC)['open_cases_count'];
+        }
+        return 0;
+    }
+
     // Get cases by counselor
     public function getByCounselor($counselor_id)
     {
@@ -194,5 +218,7 @@ class Cases
         }
         return [];
     }
+
+
 }
 ?>

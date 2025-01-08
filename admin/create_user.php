@@ -158,3 +158,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 </body>
 
 </html>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('addAccountForm');
+        form.addEventListener('submit', function(event) {
+            const password = form.querySelector('input[name="password"]').value;
+            const confirmPassword = form.querySelector('input[name="confirmPassword"]').value;
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                document.getElementById('error-message').textContent = 'Passwords do not match.';
+            }
+        });
+    });
+</script>
